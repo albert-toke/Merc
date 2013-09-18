@@ -1,0 +1,7 @@
+package faep.custom.widgets;
+
+import org.eclipse.swt.widgets.Composite;
+
+public class DetailsComposite extends Composite {
+
+}

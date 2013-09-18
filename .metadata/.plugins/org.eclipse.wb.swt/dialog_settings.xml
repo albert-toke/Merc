@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.wb.internal.rcp.model.rcp.ExtensionElementIconPropertyEditor$ImageDialog">
+		<item value="516" key="height"/>
+		<item value="705" key="width"/>
+		<item value="262" key="y"/>
+		<item value="607" key="x"/>
+	</section>
+	<section name="org.eclipse.wb.internal.swt.model.property.editor.image.ImagePropertyEditor$ImageDialog">
+		<item value="608" key="height"/>
+		<item value="881" key="width"/>
+		<item value="216" key="y"/>
+		<item value="519" key="x"/>
+	</section>
+</section>

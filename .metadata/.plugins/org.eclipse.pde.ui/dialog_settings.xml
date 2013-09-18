@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="true" key="generateActivator"/>
+	<item value="true" key="uiPlugin"/>
+	<item value="false" key="rcpPlugin"/>
+	<item value="false" key="apiAnalysis"/>
+	<item value="false" key="osgiProject"/>
+	<item value="3.5 or greater" key="targetName"/>
+	<section name="org.eclipse.pde.ui.dialogs.PluginSelectionDialog">
+		<item value="true" key="ShowStatusLine"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History/&gt;" key="History"/>
+		<section name="DialogBoundsSettings">
+			<item value="600" key="DIALOG_WIDTH"/>
+			<item value="195" key="DIALOG_Y_ORIGIN"/>
+			<item value="668" key="DIALOG_X_ORIGIN"/>
+			<item value="500" key="DIALOG_HEIGHT"/>
+			<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		</section>
+	</section>
+	<section name="org.eclipse.pde.ui.PLUGIN_STATUS_DIALOG">
+		<item value="416" key="DIALOG_WIDTH"/>
+		<item value="92" key="DIALOG_Y_ORIGIN"/>
+		<item value="389" key="DIALOG_HEIGHT"/>
+		<item value="312" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="quick_assist_proposal_size">
+	</section>
+	<section name="PluginExportWizard">
+		<item value="true" key="exportUpdate"/>
+		<item value="false" key="saveAsAnt"/>
+		<item value="" key="alias"/>
+		<item value="Generate source bundles" key="exportSourceFormat"/>
+		<item value="false" key="qualifier"/>
+		<item value="" key="password"/>
+		<item value="" key="keypass"/>
+		<item value="false" key="exportSource"/>
+		<item value="" key="keystore"/>
+		<item value="false" key="useWorkspaceCompiledClasses"/>
+		<item value="1" key="exportType"/>
+		<item value="false" key="signJAR"/>
+		<item value="D:\progz\eclipse-RCP-64-Kepler - Copy\freelance" key="destination1"/>
+		<item value="D:\progz\eclipse-RCP-64-Kepler - Copy\freelance" key="destination0"/>
+		<item value="201309100919" key="qualifierName"/>
+		<item value="true" key="allowBinaryCycles"/>
+	</section>
+	<section name="pluginsView">
+	</section>
+	<section name="pde_compiler_errorwarnings_block">
+		<item value="false" key="3"/>
+		<item value="false" key="2"/>
+		<item value="false" key="1"/>
+		<item value="true" key="0"/>
+		<item value="false" key="4"/>
+	</section>
+	<section name="JavaAttributeWizard">
+		<section name="NewClassWizardPage">
+			<item value="true" key="create_constructor"/>
+			<item value="true" key="create_unimplemented"/>
+		</section>
+	</section>
+	<section name="PDEFormActionManager">
+		<list key="RecentLaunches">
+			<item value="org.eclipse.pde.ui.runtimeWorkbenchShortcut"/>
+			<item value="org.eclipse.pde.ui.EquinoxLaunchShortcut"/>
+		</list>
+	</section>
+	<section name="pde-form-editor">
+		<item value="overview" key="org.eclipse.pde.ui.schemaEditor"/>
+	</section>
+</section>

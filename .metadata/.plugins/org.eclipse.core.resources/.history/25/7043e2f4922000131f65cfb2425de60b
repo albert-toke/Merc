@@ -1,0 +1,12 @@
+package faep.custom.widgets;
+
+import org.eclipse.swt.widgets.Composite;
+
+public class DetailsComposite extends Composite {
+
+    public DetailsComposite(Composite parent, int style) {
+	super(parent, style);
+	// TODO Auto-generated constructor stub
+    }
+
+}

@@ -71,7 +71,6 @@ public class FaepExpandItem extends ExpandItem {
 	scrolledComposite.setContent(composite);
 
 	calculateCorrectHeight();
-	// added some comment here
 
     }
 

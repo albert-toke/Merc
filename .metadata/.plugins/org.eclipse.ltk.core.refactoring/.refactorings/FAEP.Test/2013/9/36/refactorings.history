@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename type &apos;freelancer.test.util.GatewaySelecterInitializer&apos; to &apos;GatewaysInitializer&apos;&#x0D;&#x0A;- Original project: &apos;FAEP.Test&apos;&#x0D;&#x0A;- Original element: &apos;freelancer.test.util.GatewaySelecterInitializer&apos;&#x0D;&#x0A;- Renamed element: &apos;freelancer.test.util.GatewaysInitializer&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;GatewaySelecterInitializer&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;freelancer.test.util{GatewaySelecterInitializer.java[GatewaySelecterInitializer" matchStrategy="1" name="GatewaysInitializer" qualified="false" references="true" similarDeclarations="false" stamp="1378130565611" textual="false" version="1.0"/>
-</session>

@@ -1,5 +1,0 @@
-package faep.custom.widgets;
-
-public class DetailsComposite extends Composite{
-
-}

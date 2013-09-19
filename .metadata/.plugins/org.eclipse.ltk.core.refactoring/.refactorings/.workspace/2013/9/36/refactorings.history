@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;FAEP.Freelancer.Plugin&apos;" deleteContents="true" description="Delete resource &apos;FAEP.Freelancer.Plugin&apos;" element1="/FAEP.Freelancer.Plugin" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1378067615569"/>&#x0A;<refactoring comment="Delete resource &apos;FAEP.Odesk.plugin&apos;" deleteContents="true" description="Delete resource &apos;FAEP.Odesk.plugin&apos;" element1="/FAEP.Odesk.plugin" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1378126205335"/>
-</session>

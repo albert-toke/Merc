@@ -86,15 +86,15 @@ public class FreelancerMapper {
     public List<Job> convertProjectSearchResponseToSystem(String jsonString) throws BusinessException {
 	System.out.println(jsonString);
 	JsonNode messageNode;
+	List<Job> jobResponeList;
 	try {
 	    messageNode = jsonMapper.readTree(jsonString).get(ROOT);
+	    jobResponeList = convertFreelancerProjectToSystem(messageNode);
 	} catch (JsonProcessingException e) {
 	    throw new BusinessException(e);
 	} catch (IOException e) {
 	    throw new BusinessException(e);
 	}
-	List<Job> jobResponeList = convertFreelancerProjectToSystem(messageNode);
-
 	return jobResponeList;
     }
 

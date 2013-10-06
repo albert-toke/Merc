@@ -4,8 +4,10 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.swt.SWT;
 
+import faep.controller.listeners.DoubleClickListener;
 import faep.controller.listeners.FaepPreferenceListener;
 import faep.controller.listeners.FaepSearchSelectionListener;
+import faep.controller.listeners.SearchBarListener;
 import faep.gui.views.FaepView;
 
 public class FaepController {
@@ -14,8 +16,11 @@ public class FaepController {
     private FaepView view;
     private IEclipsePreferences preferences;
     private FaepSearchSelectionListener searchListener;
+    private DoubleClickListener doubleListener;
+    private SearchBarListener searchBarListener;
 
     private FaepController() {
+
     }
 
     /**
@@ -41,10 +46,18 @@ public class FaepController {
 	if (searchListener == null) {
 	    searchListener = new FaepSearchSelectionListener();
 	}
+	if (doubleListener == null) {
+	    doubleListener = new DoubleClickListener();
+	}
+	if (searchBarListener == null) {
+	    searchBarListener = new SearchBarListener();
+	}
 	if (view.getSearchButton() != null && view.getSearchCombo() != null
 		&& view.getSearchButton().getListeners(SWT.Selection).length == 0) {
 	    view.getSearchButton().addSelectionListener(searchListener);
 	    view.getSearchCombo().addSelectionListener(searchListener);
+	    view.getTableViewer().addDoubleClickListener(doubleListener);
+	    view.getSearchBar().addTraverseListener(searchBarListener);
 	}
     }
 

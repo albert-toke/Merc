@@ -44,5 +44,21 @@
             name="FAEP Preferences">
       </page>
    </extension>
+   <extension
+         id="Test"
+         name="Test View"
+         point="org.eclipse.ui.views">
+      <category
+            id="FAEP"
+            name="FAEP Category">
+      </category>
+      <view
+            allowMultiple="false"
+            class="faep.gui.TestView"
+            id="FAEP.GUI.TestView"
+            name="TestView"
+            restorable="true">
+      </view>
+   </extension>
 
 </plugin>

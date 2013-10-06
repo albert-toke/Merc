@@ -39,7 +39,7 @@ public class FaepSearchSelectionListener implements SelectionListener {
 
     // The logic for the 'GO' button.
     private void searchButtonLogic() {
-	view.removeExpandItems();
+	// view.removeExpandItems();
 	JobSearch searchParams = new JobSearch();
 	searchParams.setCount(30);
 	String searchType = view.getSearchCombo().getText();
@@ -72,15 +72,17 @@ public class FaepSearchSelectionListener implements SelectionListener {
     }
 
     private void addJobSearhResultsToView(FaepView view, JobSearch searchParams) {
+
 	List<Job> jobList = proxy.searchJobs(searchParams);
-	view.addExpandItems(jobList);
+	view.getTableViewer().setInput(jobList);
+	// view.addExpandItems(jobList);
     }
 
     private void addBiddedProjectsToView(FaepView view) {
 	List<Job> jobList;
 	try {
 	    jobList = proxy.getBiddedProjects();
-	    view.addExpandItems(jobList);
+	    // view.addExpandItems(jobList);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}

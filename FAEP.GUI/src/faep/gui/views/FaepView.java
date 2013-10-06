@@ -1,29 +1,33 @@
 package faep.gui.views;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ExpandBar;
-import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 import common.wrappers.Job;
+import common.wrappers.Project;
 
-import faep.controller.listeners.ExpandBarAdapter;
-import faep.controller.listeners.FaepExpandListener;
-import faep.custom.widgets.FaepExpandItem;
 import faep.gui.Activator;
 import faep.gui.enums.SearchOptionsEnum;
 
@@ -47,7 +51,9 @@ public class FaepView extends ViewPart {
     private Composite parent;
     private Text searchBar;
     private Button searchButton;
-    private ExpandBar expandBar;
+    private TableViewer tableViewer;
+    private Composite mainComposite;
+    private ScrolledComposite scrolledComposite;
 
     private String[] comboOptions = SearchOptionsEnum.getAllStringValues();
     private Combo searchCombo;
@@ -82,56 +88,51 @@ public class FaepView extends ViewPart {
     }
 
     public void createFreelancerView() {
-	ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL);
+	scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL);
 	scrolledComposite.setExpandHorizontal(true);
 	scrolledComposite.setExpandVertical(true);
 
 	// Composite which contains the Searchbar and the Expandbar
-	Composite composite = new Composite(scrolledComposite, SWT.NONE);
+	mainComposite = new Composite(scrolledComposite, SWT.NONE);
 	GridLayout glComposite = new GridLayout(4, false);
 	glComposite.verticalSpacing = 1;
-	composite.setLayout(glComposite);
+	mainComposite.setLayout(glComposite);
 
-	Label searchLabel = new Label(composite, SWT.NONE);
+	Label searchLabel = new Label(mainComposite, SWT.NONE);
 	searchLabel.setText("Search");
 
-	searchCombo = new Combo(composite, SWT.READ_ONLY);
+	searchCombo = new Combo(mainComposite, SWT.READ_ONLY);
 	searchCombo.setItems(comboOptions);
+	searchCombo.select(0);
 
-	searchBar = new Text(composite, SWT.BORDER);
+	searchBar = new Text(mainComposite, SWT.BORDER);
 	searchBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-	searchButton = new Button(composite, SWT.NONE);
+	searchButton = new Button(mainComposite, SWT.NONE);
 	GridData buttonGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 	buttonGridData.widthHint = 100;
 	searchButton.setLayoutData(buttonGridData);
 	searchButton.setText("GO");
 
-	// Expandbar which contains all the Job Entries
-	expandBar = new ExpandBar(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-	GridData expandBarGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
-	expandBarGridData.widthHint = 320;
-	expandBarGridData.minimumWidth = 320;
-	expandBar.setSpacing(4);
-	expandBar.setLayoutData(expandBarGridData);
-
-	// lazy loading
-	expandBar.addExpandListener(new FaepExpandListener());
-	expandBar.addControlListener(new ExpandBarAdapter());
-
-	// for (int i = 0; i < 10; i++) {
-	// @SuppressWarnings("unused")
-	// FaepExpandItem item = new FaepExpandItem(expandBar, SWT.NONE, 1);
-	// }
+	createTableViewer(mainComposite);
+	GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+	tableGridData.widthHint = 320;
+	tableGridData.minimumWidth = 320;
+	tableViewer.getControl().setLayoutData(tableGridData);
 
 	// Return to regular code
-	new Label(composite, SWT.NONE);
-	new Label(composite, SWT.NONE);
-	new Label(composite, SWT.NONE);
-	new Label(composite, SWT.NONE);
-	scrolledComposite.setContent(composite);
-	scrolledComposite.setMinWidth(480);// (new Point(480, 480));
-	// scrolledComposite.setMinSize(480, 480);
+	// new Label(composite, SWT.NONE);
+	// new Label(composite, SWT.NONE);
+	// new Label(composite, SWT.NONE);
+	// new Label(composite, SWT.NONE);
+	scrolledComposite.setContent(mainComposite);
+	scrolledComposite.setMinWidth(550);
+	scrolledComposite.addControlListener(new ControlAdapter() {
+	    public void controlResized(ControlEvent e) {
+		Rectangle r = scrolledComposite.getClientArea();
+		scrolledComposite.setMinSize(mainComposite.computeSize(r.width, SWT.DEFAULT));
+	    }
+	});
 	Activator.assignControllerToView(this);
     }
 
@@ -145,25 +146,6 @@ public class FaepView extends ViewPart {
 	Activator.assignControllerToView(this);
     }
 
-    public void addExpandItems(List<Job> jobList) {
-	for (Job job : jobList) {
-	    FaepExpandItem item = new FaepExpandItem(expandBar, SWT.NONE, job.getProjectId());
-	    item.setText(job.getProvider() + ":" + job.getProjectName());
-	    item.setProvider(job.getProvider());
-	}
-	parent.layout();
-    }
-
-    public void removeExpandItems() {
-	for (ExpandItem item : expandBar.getItems()) {
-	    item.setExpanded(false);
-	    item.dispose();
-	}
-	parent.update();
-	parent.layout();
-	System.out.println(expandBar.getItemCount());
-    }
-
     @Override
     public void setFocus() {
 	if (preferences.getBoolean("goodToGo", false)) {
@@ -174,6 +156,97 @@ public class FaepView extends ViewPart {
     @Override
     public void dispose() {
 	super.dispose();
+    }
+
+    private void createColumns(Composite parent) {
+	String[] titles = { "Project Name", "Bid Count", "Start Date", "Job Type" };
+	int[] bounds = { 200, 50, 100, 150 };
+
+	TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
+	col.setLabelProvider(new ColumnLabelProvider() {
+	    @Override
+	    public String getText(Object element) {
+		if (element instanceof Job) {
+		    Job job = (Job) element;
+		    return job.getProjectName();
+		}
+		return super.getText(element);
+	    }
+	});
+
+	col = createTableViewerColumn(titles[1], bounds[1], 1);
+	col.setLabelProvider(new ColumnLabelProvider() {
+	    @Override
+	    public String getText(Object element) {
+		if (element instanceof Job) {
+		    Job job = (Job) element;
+		    return String.valueOf(job.getBids());
+		}
+		return super.getText(element);
+	    }
+	});
+
+	col = createTableViewerColumn(titles[2], bounds[2], 2);
+	col.setLabelProvider(new ColumnLabelProvider() {
+	    @Override
+	    public String getText(Object element) {
+		if (element instanceof Job) {
+		    Job job = (Job) element;
+		    return job.getStartDate().toString();
+		}
+		return super.getText(element);
+	    }
+	});
+
+	col = createTableViewerColumn(titles[3], bounds[3], 3);
+	col.setLabelProvider(new ColumnLabelProvider() {
+	    @Override
+	    public String getText(Object element) {
+		if (element instanceof Job) {
+		    Job job = (Job) element;
+		    return job.getJobTypeCSV();
+		}
+		return super.getText(element);
+	    }
+	});
+    }
+
+    private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+	final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+	final TableColumn column = viewerColumn.getColumn();
+	column.setText(title);
+	column.setWidth(bound);
+	column.setResizable(true);
+	column.setMoveable(true);
+	return viewerColumn;
+    }
+
+    private void createTableViewer(Composite parent) {
+	tableViewer = new TableViewer(parent, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+
+	Table table = tableViewer.getTable();
+	table.setHeaderVisible(true);
+	table.setLinesVisible(false);
+	// ArrayContentProvider does not store any state,
+	// therefore you can re-use instances
+
+	tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+	createColumns(parent);
+    }
+
+    public void createProjectDetailsComposite(Project project) {
+	for (Control control : mainComposite.getChildren()) {
+	    if (control instanceof Table) {
+		System.out.println("Found the motherfucker");
+		control.dispose();
+		break;
+	    }
+	}
+	FaepViewHelper.createDetailsComposite(mainComposite, project);
+	mainComposite.layout();
+	scrolledComposite.layout();
+
     }
 
     // Getters for the Controllers
@@ -195,6 +268,10 @@ public class FaepView extends ViewPart {
 
     public Combo getSearchCombo() {
 	return this.searchCombo;
+    }
+
+    public TableViewer getTableViewer() {
+	return this.tableViewer;
     }
 
 }

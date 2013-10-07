@@ -15,6 +15,7 @@ import common.wrappers.JobSearch;
 import exceptions.BusinessException;
 import faep.gui.enums.SearchOptionsEnum;
 import faep.gui.views.FaepView;
+import faep.gui.views.FaepViewHelper;
 
 public class FaepSearchSelectionListener implements SelectionListener {
 
@@ -34,6 +35,8 @@ public class FaepSearchSelectionListener implements SelectionListener {
 	    searchButtonLogic();
 	} else if (e.getSource() == view.getSearchCombo()) {
 	    searchComboBoxLogic();
+	} else if (e.getSource() == FaepViewHelper.getReturnButton()) {
+	    view.createTableViewer();
 	}
     }
 

@@ -13,7 +13,6 @@ import faep.gui.views.FaepView;
 public class FaepController {
 
     private static FaepController controller;
-    private FaepView view;
     private IEclipsePreferences preferences;
     private FaepSearchSelectionListener searchListener;
     private DoubleClickListener doubleListener;
@@ -42,7 +41,6 @@ public class FaepController {
      *            Instance of the freelancer view.
      */
     public void setView(FaepView view) {
-	this.view = view;
 	if (searchListener == null) {
 	    searchListener = new FaepSearchSelectionListener();
 	}
@@ -62,20 +60,18 @@ public class FaepController {
     }
 
     /**
-     * Getter method for the View.
-     * 
-     * @return Returns the instance of the FaepView from this Controller.
-     */
-    public FaepView getView() {
-	return view;
-    }
-
-    /**
      * Sets the preference change listener from the controller the listener for the applications preference node.
      */
     public void addPreferenceChangeListener() {
 	preferences = ConfigurationScope.INSTANCE.getNode("faep.plugin.preferences");
 	FaepPreferenceListener listener = new FaepPreferenceListener();
 	preferences.addPreferenceChangeListener(listener);
+    }
+
+    public FaepSearchSelectionListener getSelectionListener() {
+	if (searchListener == null) {
+	    searchListener = new FaepSearchSelectionListener();
+	}
+	return searchListener;
     }
 }

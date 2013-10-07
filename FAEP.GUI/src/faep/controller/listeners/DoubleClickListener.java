@@ -12,6 +12,7 @@ import common.wrappers.Job;
 import common.wrappers.Project;
 
 import exceptions.BusinessException;
+import faep.controller.FaepController;
 import faep.gui.views.FaepView;
 
 public class DoubleClickListener implements IDoubleClickListener {
@@ -37,7 +38,7 @@ public class DoubleClickListener implements IDoubleClickListener {
 	    try {
 		project = proxy.getProjectDetails(job.getProjectId(), job.getProvider());
 		// List<Bid> bidList;
-		view.createProjectDetailsComposite(project);
+		view.createProjectDetailsComposite(project, job, FaepController.getInstance().getSelectionListener());
 
 	    } catch (BusinessException e) {
 		// TODO Auto-generated catch block

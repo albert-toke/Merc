@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -88,7 +89,7 @@ public class FaepView extends ViewPart {
     }
 
     public void createFreelancerView() {
-	scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL);
+	scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	scrolledComposite.setExpandHorizontal(true);
 	scrolledComposite.setExpandVertical(true);
 
@@ -114,11 +115,7 @@ public class FaepView extends ViewPart {
 	searchButton.setLayoutData(buttonGridData);
 	searchButton.setText("GO");
 
-	createTableViewer(mainComposite);
-	GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
-	tableGridData.widthHint = 320;
-	tableGridData.minimumWidth = 320;
-	tableViewer.getControl().setLayoutData(tableGridData);
+	createTableViewer();
 
 	// Return to regular code
 	// new Label(composite, SWT.NONE);
@@ -156,6 +153,27 @@ public class FaepView extends ViewPart {
     @Override
     public void dispose() {
 	super.dispose();
+    }
+
+    public void createTableViewer() {
+	FaepViewHelper.disposeDetailsComposite();
+	FaepViewHelper.disposeInfoComposite();
+
+	tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+
+	Table table = tableViewer.getTable();
+	table.setHeaderVisible(true);
+	table.setLinesVisible(false);
+
+	tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+	createColumns(mainComposite);
+
+	GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+	tableGridData.widthHint = 320;
+	tableGridData.minimumWidth = 320;
+	tableViewer.getControl().setLayoutData(tableGridData);
+	mainComposite.layout();
     }
 
     private void createColumns(Composite parent) {
@@ -221,32 +239,17 @@ public class FaepView extends ViewPart {
 	return viewerColumn;
     }
 
-    private void createTableViewer(Composite parent) {
-	tableViewer = new TableViewer(parent, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
-
-	Table table = tableViewer.getTable();
-	table.setHeaderVisible(true);
-	table.setLinesVisible(false);
-	// ArrayContentProvider does not store any state,
-	// therefore you can re-use instances
-
-	tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-	createColumns(parent);
-    }
-
-    public void createProjectDetailsComposite(Project project) {
+    public void createProjectDetailsComposite(Project project, Job job, SelectionListener listener) {
 	for (Control control : mainComposite.getChildren()) {
 	    if (control instanceof Table) {
-		System.out.println("Found the motherfucker");
 		control.dispose();
 		break;
 	    }
 	}
+	FaepViewHelper.createInformationBar(mainComposite, job, listener);
 	FaepViewHelper.createDetailsComposite(mainComposite, project);
-	mainComposite.layout();
+	// mainComposite.layout();
 	scrolledComposite.layout();
-
     }
 
     // Getters for the Controllers

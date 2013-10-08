@@ -1,5 +1,7 @@
 package faep.gui.views;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,6 +28,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
+import common.wrappers.Bid;
 import common.wrappers.Job;
 import common.wrappers.Project;
 
@@ -143,21 +146,27 @@ public class FaepView extends ViewPart {
 	Activator.assignControllerToView(this);
     }
 
-    @Override
-    public void setFocus() {
-	if (preferences.getBoolean("goodToGo", false)) {
-	    searchBar.setFocus();
-	}
+    public void createProjectDetailsWithBids(Project project, Job job, SelectionListener listener, List<Bid> bidList,
+	    boolean bidPlaced) {
+	createProjectDetailsComposite(project, job, listener, bidPlaced);
+	FaepViewHelper.createAllBidComposite(mainComposite, bidList);
+	mainComposite.layout();
+	// scrolledComposite.layout();
     }
 
-    @Override
-    public void dispose() {
-	super.dispose();
+    private void createProjectDetailsComposite(Project project, Job job, SelectionListener listener, boolean bidPlaced) {
+	for (Control control : mainComposite.getChildren()) {
+	    if (control instanceof Table) {
+		control.dispose();
+		break;
+	    }
+	}
+	FaepViewHelper.createInformationBar(mainComposite, job, listener);
+	FaepViewHelper.createDetailsComposite(mainComposite, project, bidPlaced);
     }
 
     public void createTableViewer() {
-	FaepViewHelper.disposeDetailsComposite();
-	FaepViewHelper.disposeInfoComposite();
+	FaepViewHelper.disposeProjectComposites();
 
 	tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
 
@@ -239,19 +248,6 @@ public class FaepView extends ViewPart {
 	return viewerColumn;
     }
 
-    public void createProjectDetailsComposite(Project project, Job job, SelectionListener listener) {
-	for (Control control : mainComposite.getChildren()) {
-	    if (control instanceof Table) {
-		control.dispose();
-		break;
-	    }
-	}
-	FaepViewHelper.createInformationBar(mainComposite, job, listener);
-	FaepViewHelper.createDetailsComposite(mainComposite, project);
-	// mainComposite.layout();
-	scrolledComposite.layout();
-    }
-
     // Getters for the Controllers
     public Composite getParent() {
 	return this.parent;
@@ -277,4 +273,15 @@ public class FaepView extends ViewPart {
 	return this.tableViewer;
     }
 
+    @Override
+    public void setFocus() {
+	if (preferences.getBoolean("goodToGo", false)) {
+	    searchBar.setFocus();
+	}
+    }
+
+    @Override
+    public void dispose() {
+	super.dispose();
+    }
 }

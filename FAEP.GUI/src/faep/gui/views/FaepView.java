@@ -19,7 +19,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -91,6 +90,9 @@ public class FaepView extends ViewPart {
 	}
     }
 
+    /**
+     * Initializes the freelancer View with the searchbar and table.
+     */
     public void createFreelancerView() {
 	scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	scrolledComposite.setExpandHorizontal(true);
@@ -120,11 +122,6 @@ public class FaepView extends ViewPart {
 
 	createTableViewer();
 
-	// Return to regular code
-	// new Label(composite, SWT.NONE);
-	// new Label(composite, SWT.NONE);
-	// new Label(composite, SWT.NONE);
-	// new Label(composite, SWT.NONE);
 	scrolledComposite.setContent(mainComposite);
 	scrolledComposite.setMinWidth(550);
 	scrolledComposite.addControlListener(new ControlAdapter() {
@@ -133,9 +130,13 @@ public class FaepView extends ViewPart {
 		scrolledComposite.setMinSize(mainComposite.computeSize(r.width, SWT.DEFAULT));
 	    }
 	});
+
 	Activator.assignControllerToView(this);
     }
 
+    /**
+     * Initializes the error view, where the user is notified to configure his account.
+     */
     public void createErrorView() {
 	Composite composite = new Composite(parent, SWT.NONE);
 	composite.setLayout(new GridLayout());
@@ -146,42 +147,61 @@ public class FaepView extends ViewPart {
 	Activator.assignControllerToView(this);
     }
 
+    /**
+     * 
+     * @param project
+     * @param job
+     * @param listener
+     * @param bidList
+     * @param bidPlaced
+     */
     public void createProjectDetailsWithBids(Project project, Job job, SelectionListener listener, List<Bid> bidList,
 	    boolean bidPlaced) {
 	createProjectDetailsComposite(project, job, listener, bidPlaced);
 	FaepViewHelper.createAllBidComposite(mainComposite, bidList);
-	mainComposite.layout();
-	// scrolledComposite.layout();
+	parent.layout(true, true);
+	recalculateScrolledCompositeSize();
     }
 
     private void createProjectDetailsComposite(Project project, Job job, SelectionListener listener, boolean bidPlaced) {
-	for (Control control : mainComposite.getChildren()) {
-	    if (control instanceof Table) {
-		control.dispose();
-		break;
-	    }
-	}
+	// for (Control control : mainComposite.getChildren()) {
+	// if (control instanceof Table) {
+	// control.dispose();
+	// break;
+	// }
+	// }
+	tableViewer.getControl().setVisible(false);
+	((GridData) tableViewer.getControl().getLayoutData()).heightHint = 0;
 	FaepViewHelper.createInformationBar(mainComposite, job, listener);
 	FaepViewHelper.createDetailsComposite(mainComposite, project, bidPlaced);
     }
 
+    /**
+     * 
+     */
     public void createTableViewer() {
 	FaepViewHelper.disposeProjectComposites();
 
-	tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+	if (tableViewer == null) {
+	    tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
 
-	Table table = tableViewer.getTable();
-	table.setHeaderVisible(true);
-	table.setLinesVisible(false);
+	    Table table = tableViewer.getTable();
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(false);
 
-	tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+	    tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-	createColumns(mainComposite);
+	    createColumns(mainComposite);
 
-	GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
-	tableGridData.widthHint = 320;
-	tableGridData.minimumWidth = 320;
-	tableViewer.getControl().setLayoutData(tableGridData);
+	    GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+	    tableGridData.widthHint = 320;
+	    tableGridData.minimumWidth = 320;
+	    tableViewer.getControl().setLayoutData(tableGridData);
+	} else {
+	    ((GridData) tableViewer.getControl().getLayoutData()).heightHint = -1;
+	    tableViewer.getControl().setVisible(true);
+	}
+
 	mainComposite.layout();
     }
 
@@ -248,6 +268,11 @@ public class FaepView extends ViewPart {
 	return viewerColumn;
     }
 
+    private void recalculateScrolledCompositeSize() {
+	Rectangle r = scrolledComposite.getClientArea();
+	scrolledComposite.setMinSize(mainComposite.computeSize(r.width, SWT.DEFAULT));
+    }
+
     // Getters for the Controllers
     public Composite getParent() {
 	return this.parent;
@@ -273,6 +298,9 @@ public class FaepView extends ViewPart {
 	return this.tableViewer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFocus() {
 	if (preferences.getBoolean("goodToGo", false)) {
@@ -280,6 +308,9 @@ public class FaepView extends ViewPart {
 	}
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose() {
 	super.dispose();

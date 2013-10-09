@@ -6,7 +6,7 @@ import org.eclipse.swt.SWT;
 
 import faep.controller.listeners.DoubleClickListener;
 import faep.controller.listeners.FaepPreferenceListener;
-import faep.controller.listeners.FaepSearchSelectionListener;
+import faep.controller.listeners.FaepSelectionListener;
 import faep.controller.listeners.SearchBarListener;
 import faep.gui.views.FaepView;
 
@@ -14,7 +14,7 @@ public class FaepController {
 
     private static FaepController controller;
     private IEclipsePreferences preferences;
-    private FaepSearchSelectionListener searchListener;
+    private FaepSelectionListener searchListener;
     private DoubleClickListener doubleListener;
     private SearchBarListener searchBarListener;
 
@@ -42,7 +42,7 @@ public class FaepController {
      */
     public void setView(FaepView view) {
 	if (searchListener == null) {
-	    searchListener = new FaepSearchSelectionListener();
+	    searchListener = new FaepSelectionListener();
 	}
 	if (doubleListener == null) {
 	    doubleListener = new DoubleClickListener();
@@ -68,10 +68,17 @@ public class FaepController {
 	preferences.addPreferenceChangeListener(listener);
     }
 
-    public FaepSearchSelectionListener getSelectionListener() {
+    public FaepSelectionListener getSelectionListener() {
 	if (searchListener == null) {
-	    searchListener = new FaepSearchSelectionListener();
+	    searchListener = new FaepSelectionListener();
 	}
 	return searchListener;
+    }
+
+    public DoubleClickListener getDoubleClickListener() {
+	if (doubleListener == null) {
+	    doubleListener = new DoubleClickListener();
+	}
+	return doubleListener;
     }
 }

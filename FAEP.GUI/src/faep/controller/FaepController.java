@@ -1,9 +1,16 @@
 package faep.controller;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.swt.SWT;
 
+import proxy.Proxy;
+
+import common.wrappers.Job;
+
+import exceptions.BusinessException;
 import faep.controller.listeners.DoubleClickListener;
 import faep.controller.listeners.FaepPreferenceListener;
 import faep.controller.listeners.FaepSelectionListener;
@@ -18,8 +25,11 @@ public class FaepController {
     private DoubleClickListener doubleListener;
     private SearchBarListener searchBarListener;
 
-    private FaepController() {
+    private Proxy proxy;
+    private List<Job> projectsBidOn;
 
+    private FaepController() {
+	this.proxy = Proxy.getInstance();
     }
 
     /**
@@ -50,8 +60,8 @@ public class FaepController {
 	if (searchBarListener == null) {
 	    searchBarListener = new SearchBarListener();
 	}
-	if (view.getSearchButton() != null && view.getSearchCombo() != null
-		&& view.getSearchButton().getListeners(SWT.Selection).length == 0) {
+	if (view.getSearchButton() != null && !view.getSearchButton().isDisposed() && view.getSearchCombo() != null
+		&& !view.getSearchCombo().isDisposed() && view.getSearchButton().getListeners(SWT.Selection).length == 0) {
 	    view.getSearchButton().addSelectionListener(searchListener);
 	    view.getSearchCombo().addSelectionListener(searchListener);
 	    view.getTableViewer().addDoubleClickListener(doubleListener);
@@ -80,5 +90,43 @@ public class FaepController {
 	    doubleListener = new DoubleClickListener();
 	}
 	return doubleListener;
+    }
+
+    // TODO maybe move this part into Proxy???
+    public List<Job> getProjectsBidOn() {
+	if (projectsBidOn == null) {
+	    try {
+		projectsBidOn = proxy.getBiddedProjects();
+	    } catch (BusinessException e) {
+		e.printStackTrace();
+	    }
+	}
+	return projectsBidOn;
+    }
+
+    public void refreshProjectsBidOnList() {
+	try {
+	    projectsBidOn = proxy.getBiddedProjects();
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    public boolean verifyProjectAlreadyBidOn(Job job) {
+	if (projectsBidOn == null) {
+	    try {
+		projectsBidOn = proxy.getBiddedProjects();
+	    } catch (BusinessException e) {
+		e.printStackTrace();
+	    }
+	}
+	if (job != null) {
+	    for (Job j : projectsBidOn) {
+		if (j.getProjectId() == job.getProjectId()) {
+		    return true;
+		}
+	    }
+	}
+	return false;
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -33,17 +34,6 @@ import common.wrappers.Project;
 
 import faep.gui.Activator;
 import faep.gui.enums.SearchOptionsEnum;
-
-/**
- * This sample class demonstrates how to plug-in a new workbench view. The view shows data obtained from the model. The sample
- * creates a dummy model on the fly, but a real implementation would connect to the model available either in this or another
- * plug-in (e.g. the workspace). The view is connected to the model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be presented in the view. Each view can present the same
- * model objects using different labels and icons, if needed. Alternatively, a single label provider can be shared between views
- * in order to ensure that objects of the same type are presented in the same way everywhere.
- * <p>
- */
 
 public class FaepView extends ViewPart {
 
@@ -148,37 +138,31 @@ public class FaepView extends ViewPart {
     }
 
     /**
+     * Creates the Detail Composite alongside the Bids that are placed on this project.
      * 
      * @param project
+     *            Current project and the related data.
      * @param job
-     * @param listener
+     * @param sListener
      * @param bidList
      * @param bidPlaced
      */
-    public void createProjectDetailsWithBids(Project project, Job job, SelectionListener listener, List<Bid> bidList,
-	    boolean bidPlaced) {
-	createProjectDetailsComposite(project, job, listener, bidPlaced);
+    public void createProjectDetailsWithBids(Project project, Job job, SelectionListener sListener, List<Bid> bidList,
+	    Bid bidPlaced) {
+	createProjectDetailsComposite(project, job, sListener, bidPlaced);
 	FaepViewHelper.createAllBidComposite(mainComposite, bidList);
 	parent.layout(true, true);
 	recalculateScrolledCompositeSize();
     }
 
-    private void createProjectDetailsComposite(Project project, Job job, SelectionListener listener, boolean bidPlaced) {
-	// for (Control control : mainComposite.getChildren()) {
-	// if (control instanceof Table) {
-	// control.dispose();
-	// break;
-	// }
-	// }
+    private void createProjectDetailsComposite(Project project, Job job, SelectionListener sListener, Bid bidPlaced) {
 	tableViewer.getControl().setVisible(false);
 	((GridData) tableViewer.getControl().getLayoutData()).heightHint = 0;
-	FaepViewHelper.createInformationBar(mainComposite, job, listener);
-	FaepViewHelper.createDetailsComposite(mainComposite, project, bidPlaced);
+	FaepViewHelper.createInformationBar(mainComposite, job, sListener);
+	FaepViewHelper.createDetailsComposite(mainComposite, project, sListener);
+	FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener);
     }
 
-    /**
-     * 
-     */
     public void createTableViewer() {
 	FaepViewHelper.disposeProjectComposites();
 
@@ -266,6 +250,14 @@ public class FaepView extends ViewPart {
 	column.setResizable(true);
 	column.setMoveable(true);
 	return viewerColumn;
+    }
+
+    public void createInfoDialog(String title, String message) {
+	MessageDialog.openInformation(getSite().getShell(), title, message);
+    }
+
+    public void createErrorDialog(String title, String message) {
+	MessageDialog.openError(getSite().getShell(), title, message);
     }
 
     private void recalculateScrolledCompositeSize() {

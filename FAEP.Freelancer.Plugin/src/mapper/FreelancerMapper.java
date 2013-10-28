@@ -156,6 +156,7 @@ public class FreelancerMapper {
 	    bid.setProviderUserId(freelanceBid.get("provider_userid").asLong());
 	    bid.setRating(freelanceBid.get("rating").asText());
 	    bid.setSubmitTime(freelanceBid.get("submittime").asText());
+	    bid.setDuration(freelanceBid.get("period").asInt());
 	    bidList.add(bid);
 
 	}

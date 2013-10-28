@@ -2,11 +2,15 @@ package faep.gui.views;
 
 import java.util.List;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,10 +30,19 @@ public class FaepViewHelper {
     private static Text text9;
     private static Text text10;
     private static Button returnButton;
+    private static Button bidButton;
     private static Composite infoComposite;
     private static Composite detailsComposite;
     private static Composite bidPlaceComposite;
     private static Composite bidAllComposite;
+    private static Text bidAmountText;
+    private static Text bidReqTimeText;
+    private static Text bidDescriptionText;
+    private static ControlDecoration bidAmountDecorator;
+    private static ControlDecoration bidReqTimeDecorator;
+    private static ControlDecoration bidDescriptionDecorator;
+    private static long projectId;
+    private static String provider;
 
     public static Composite createInformationBar(Composite parent, Job job, SelectionListener listener) {
 	infoComposite = new Composite(parent, SWT.NONE);
@@ -41,22 +54,24 @@ public class FaepViewHelper {
 
 	returnButton = new Button(infoComposite, SWT.PUSH);
 	returnButton.setText("Back");
-	returnButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+	returnButton.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 	returnButton.addSelectionListener(listener);
 
 	Label projectNameLabel = new Label(infoComposite, SWT.NONE);
 	projectNameLabel.setText(job.getProjectName());
-	projectNameLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+	projectNameLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
 
 	FontData[] font = projectNameLabel.getFont().getFontData();
 	font[0].setHeight(16);
 	font[0].setStyle(SWT.BOLD);
 	projectNameLabel.setFont(new Font(Display.getCurrent(), font[0]));
 
+	projectId = job.getProjectId();
+	provider = job.getProvider();
 	return infoComposite;
     }
 
-    public static Composite createDetailsComposite(Composite parent, Project project, boolean bidPlaced) {
+    public static Composite createDetailsComposite(Composite parent, Project project, SelectionListener listener) {
 	detailsComposite = new Composite(parent, SWT.NONE);
 
 	GridData compGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
@@ -103,7 +118,6 @@ public class FaepViewHelper {
 	text10.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 3));
 	text10.setText(project.getJobCategoryAsString("\n"));
 
-	creaeteBidPlacedComposite(detailsComposite, bidPlaced);
 	return detailsComposite;
     }
 
@@ -123,39 +137,151 @@ public class FaepViewHelper {
 	return textField;
     }
 
-    private static void creaeteBidPlacedComposite(Composite parent, boolean bidPlaced) {
-	bidPlaceComposite = new Composite(parent, SWT.NONE);
-	bidPlaceComposite.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 2, 3));
+    /**
+     * Creates the composite which is responsible for the own bid placement and displaying.
+     * 
+     * @param parent
+     * @param bidPlaced
+     * @param sListener
+     */
+    public static void creaeteMyBidComposite(Composite parent, Bid bidPlaced, SelectionListener sListener) {
+	boolean editable = false;
+	if (bidPlaced == null) {
+	    editable = true;
+	}
+
+	bidPlaceComposite = new Composite(parent, SWT.BORDER);
+	bidPlaceComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 5, 3));
 	bidPlaceComposite.setLayout(new GridLayout(2, false));
 
+	Label infoLabel = new Label(bidPlaceComposite, SWT.NONE);
+	infoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1));
+	infoLabel.setText("My Bid");
+
 	Label bidAmountLabel = new Label(bidPlaceComposite, SWT.NONE);
-	bidAmountLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+	bidAmountLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 	bidAmountLabel.setText("Bid Ammount($):");
 
-	Text bidAmountText = new Text(bidPlaceComposite, SWT.NONE);
-	bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	bidAmountText.setEditable(!bidPlaced);
+	bidAmountText = new Text(bidPlaceComposite, SWT.NONE);
+	bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+	bidAmountText.setEditable(editable);
 	bidAmountText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
-	//
-	// Label bidCurrencyLabel = new Label(myBidComposite, SWT.NONE);
-	// bidCurrencyLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-	// bidCurrencyLabel.setText("Currency:");
+	bidAmountDecorator = addTextDecorator(bidAmountText);
 
 	Label bidDurationLabel = new Label(bidPlaceComposite, SWT.NONE);
-	bidDurationLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+	bidDurationLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 	bidDurationLabel.setText("Duration:");
 
-	Text bidReqTimeText = new Text(bidPlaceComposite, SWT.NONE);
-	bidReqTimeText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	bidReqTimeText.setEditable(!bidPlaced);
+	bidReqTimeText = new Text(bidPlaceComposite, SWT.NONE);
+	bidReqTimeText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+	bidReqTimeText.setEditable(editable);
 	bidReqTimeText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+	bidReqTimeDecorator = addTextDecorator(bidReqTimeText);
 
-	Button bidButton = new Button(bidPlaceComposite, SWT.PUSH);
-	bidButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+	Label bidDescriptionLabel = new Label(bidPlaceComposite, SWT.NONE);
+	bidDescriptionLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 3));
+	bidDescriptionLabel.setText("Description:");
+
+	bidDescriptionText = new Text(bidPlaceComposite, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
+	GridData descriptionGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
+	descriptionGridData.heightHint = 75;
+	bidDescriptionText.setLayoutData(descriptionGridData);
+	bidDescriptionText.setEditable(editable);
+	bidDescriptionText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+	bidDescriptionDecorator = addTextDecorator(bidDescriptionText);
+
+	bidButton = new Button(bidPlaceComposite, SWT.PUSH);
+	bidButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
 	bidButton.setSize(130, SWT.DEFAULT);
 
-	bidButton.setText("Bid on Project");
+	bidButton.addSelectionListener(sListener);
 
+	if (!editable) {
+	    bidButton.setText("Withdraw Bid");
+	    setBidTextContent(bidPlaced);
+	} else {
+	    bidButton.setText("Bid on Project");
+	}
+    }
+
+    /**
+     * Creates a Decorator for the specified Text Widget.
+     * 
+     * @param text
+     *            The Widget to whom the Decorator will be associated.
+     */
+    public static ControlDecoration addTextDecorator(Text text) {
+	ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT);
+	FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+		FieldDecorationRegistry.DEC_ERROR);
+	Image img = fieldDecoration.getImage();
+	decorator.setImage(img);
+	String errorMessage = "";
+	if (text == bidAmountText) {
+	    errorMessage = "Pls enter only numeric fields";
+	} else if (text == bidReqTimeText) {
+	    errorMessage = "Pls enter only numeric fields";
+	} else if (text == bidDescriptionText) {
+	    errorMessage = "The number of characters must be between 10 and 200.";
+	}
+	decorator.setDescriptionText(errorMessage);
+	decorator.hide();
+	return decorator;
+    }
+
+    private static void setBidTextContent(Bid bidPlaced) {
+	bidAmountText.setText(bidPlaced.getBidAmount() + "");
+	bidReqTimeText.setText(bidPlaced.getDuration() + "");
+	bidDescriptionText.setText(bidPlaced.getDescription());
+    }
+
+    public static void showBidAmountDecorator() {
+	if (bidAmountDecorator != null) {
+	    bidAmountDecorator.show();
+	    bidAmountText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	}
+    }
+
+    public static void showBidReqTimeDecorator() {
+	if (bidReqTimeDecorator != null) {
+	    bidReqTimeDecorator.show();
+	    bidReqTimeText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	}
+    }
+
+    public static void showBidDescriptionDecorator() {
+	if (bidDescriptionDecorator != null) {
+	    bidDescriptionDecorator.show();
+	    bidDescriptionText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	}
+    }
+
+    public static void hideBidAmountDecorator() {
+	if (bidAmountDecorator != null) {
+	    bidAmountDecorator.hide();
+	    bidAmountText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	}
+    }
+
+    public static void hideBidReqTimeDecorator() {
+	if (bidReqTimeDecorator != null) {
+	    bidReqTimeDecorator.hide();
+	    bidReqTimeText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	}
+    }
+
+    public static void hideBidDescriptionDecorator() {
+	if (bidDescriptionDecorator != null) {
+	    bidDescriptionDecorator.hide();
+	    bidDescriptionText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	}
+    }
+
+    public static void dissableMyBidWidgets() {
+	bidAmountText.setEditable(false);
+	bidDescriptionText.setEditable(false);
+	bidReqTimeText.setEditable(false);
+	bidButton.setText("Cancel Bid");
     }
 
     public static void createAllBidComposite(Composite parent, List<Bid> bidList) {
@@ -164,34 +290,62 @@ public class FaepViewHelper {
 	bidAllComposite.setLayout(new FillLayout(SWT.VERTICAL));
 
 	for (Bid bid : bidList) {
-	    Composite comp = new Composite(bidAllComposite, SWT.BORDER);
-	    comp.setLayout(new GridLayout(4, false));
-
-	    Text userText = addTextColumns("Freelancer:", bid.getProvider(), comp, false);
-	    userText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-	    Text ratingText = addTextColumns("Rating:", bid.getRating(), comp, false);
-	    ratingText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-	    Text bidAmountText = addTextColumns("Bid Amount:", bid.getBidAmount() + "", comp, false);
-	    bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-	    Text milestoneText = addTextColumns("Milestone:", bid.getMilestone(), comp, false);
-	    milestoneText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-	    Text submitTimeText = addTextColumns("Submit Time:", bid.getSubmitTime(), comp, false);
-	    submitTimeText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-	    new Label(comp, SWT.NONE);
-	    new Label(comp, SWT.NONE);
-
-	    Text descriptionText = addTextColumns("Description:", bid.getDescription(), comp, true);
-	    descriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 2));
+	    createSingleBidComposite(bidAllComposite, bid);
 	}
+    }
+
+    private static void createSingleBidComposite(Composite parent, Bid bid) {
+	Composite comp = new Composite(bidAllComposite, SWT.BORDER);
+	comp.setLayout(new GridLayout(4, false));
+
+	Text userText = addTextColumns("Freelancer:", bid.getProvider(), comp, false);
+	userText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+	Text ratingText = addTextColumns("Rating:", bid.getRating(), comp, false);
+	ratingText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+	Text bidAmountText = addTextColumns("Bid Amount:", bid.getBidAmount() + "", comp, false);
+	bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+	Text milestoneText = addTextColumns("Milestone:", bid.getMilestone(), comp, false);
+	milestoneText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+	Text submitTimeText = addTextColumns("Submit Time:", bid.getSubmitTime(), comp, false);
+	submitTimeText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+	new Label(comp, SWT.NONE);
+	new Label(comp, SWT.NONE);
+
+	Text descriptionText = addTextColumns("Description:", bid.getDescription(), comp, true);
+	descriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 2));
     }
 
     public static Button getReturnButton() {
 	return returnButton;
+    }
+
+    public static Button getBidButton() {
+	return bidButton;
+    }
+
+    public static Text getBidAmountText() {
+	return bidAmountText;
+    }
+
+    public static Text getBidReqTimeText() {
+	return bidReqTimeText;
+    }
+
+    public static Text getBidDescriptionText() {
+	return bidDescriptionText;
+    }
+
+    public static long getProjectId() {
+	return projectId;
+    }
+
+    public static String getProvider() {
+	return provider;
     }
 
     public static void disposeProjectComposites() {
@@ -206,6 +360,12 @@ public class FaepViewHelper {
 	}
 	if (infoComposite != null && !infoComposite.isDisposed()) {
 	    infoComposite.dispose();
+	}
+    }
+
+    public static void disposeProjectBidsComposite() {
+	if (bidAllComposite != null && !bidAllComposite.isDisposed()) {
+	    bidAllComposite.dispose();
 	}
     }
 }

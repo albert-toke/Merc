@@ -46,7 +46,7 @@ public class FaepViewHelper {
 
     public static Composite createInformationBar(Composite parent, Job job, SelectionListener listener) {
 	infoComposite = new Composite(parent, SWT.NONE);
-	GridData compGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+	GridData compGridData = new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1);
 	compGridData.widthHint = 320;
 	compGridData.minimumWidth = 320;
 	infoComposite.setLayoutData(compGridData);
@@ -57,14 +57,16 @@ public class FaepViewHelper {
 	returnButton.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1));
 	returnButton.addSelectionListener(listener);
 
-	Label projectNameLabel = new Label(infoComposite, SWT.NONE);
-	projectNameLabel.setText(job.getProjectName());
-	projectNameLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
+	Text projectNameText = new Text(infoComposite, SWT.WRAP | SWT.MULTI);
+	projectNameText.setText(job.getProjectName());
+	projectNameText.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
 
-	FontData[] font = projectNameLabel.getFont().getFontData();
+	FontData[] font = projectNameText.getFont().getFontData();
 	font[0].setHeight(16);
 	font[0].setStyle(SWT.BOLD);
-	projectNameLabel.setFont(new Font(Display.getCurrent(), font[0]));
+	projectNameText.setFont(new Font(Display.getCurrent(), font[0]));
+	projectNameText.setEditable(false);
+	projectNameText.setEnabled(false);
 
 	projectId = job.getProjectId();
 	provider = job.getProvider();
@@ -74,7 +76,7 @@ public class FaepViewHelper {
     public static Composite createDetailsComposite(Composite parent, Project project, SelectionListener listener) {
 	detailsComposite = new Composite(parent, SWT.NONE);
 
-	GridData compGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+	GridData compGridData = new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1);
 	compGridData.widthHint = 320;
 	compGridData.minimumWidth = 320;
 	detailsComposite.setLayoutData(compGridData);

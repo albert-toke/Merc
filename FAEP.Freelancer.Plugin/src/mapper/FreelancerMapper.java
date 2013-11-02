@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +25,6 @@ import common.wrappers.ProjectPublicMessage;
 
 import enums.DirectionEnum;
 import exceptions.BusinessException;
-import freelancer.response.wrappers.ProjectSearchResponseItemDTO;
-import freelancer.response.wrappers.ProjectSearchResponseListDTO;
 
 public class FreelancerMapper {
 
@@ -52,17 +48,6 @@ public class FreelancerMapper {
 	    String msg = error.get("msg").asText();
 	    throw new BusinessException(errorCode, msg, longmsg);
 	}
-    }
-
-    public ProjectSearchResponseListDTO convertProjectSearchJsonToDTO(String jsonString) throws JsonParseException,
-	    JsonMappingException, IOException {
-
-	List<ProjectSearchResponseItemDTO> responseList;
-	responseList = jsonMapper.readValue(jsonString, new TypeReference<List<ProjectSearchResponseItemDTO>>() {
-	});
-	ProjectSearchResponseListDTO responseDTO = new ProjectSearchResponseListDTO();
-	responseDTO.setResponseList(responseList);
-	return responseDTO;
     }
 
     public Map<String, String> convertProjectSearchDtoToString(JobSearch jobSearchDto) {

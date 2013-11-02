@@ -158,6 +158,7 @@ public class FaepView extends ViewPart {
     private void createProjectDetailsComposite(Project project, Job job, SelectionListener sListener, Bid bidPlaced) {
 	tableViewer.getControl().setVisible(false);
 	((GridData) tableViewer.getControl().getLayoutData()).heightHint = 0;
+	((GridData) tableViewer.getControl().getLayoutData()).grabExcessVerticalSpace = false;
 	FaepViewHelper.createInformationBar(mainComposite, job, sListener);
 	FaepViewHelper.createDetailsComposite(mainComposite, project, sListener);
 	FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener);
@@ -168,11 +169,9 @@ public class FaepView extends ViewPart {
 
 	if (tableViewer == null) {
 	    tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
-
 	    Table table = tableViewer.getTable();
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(false);
-
 	    tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
 	    createColumns(mainComposite);
@@ -183,6 +182,7 @@ public class FaepView extends ViewPart {
 	    tableViewer.getControl().setLayoutData(tableGridData);
 	} else {
 	    ((GridData) tableViewer.getControl().getLayoutData()).heightHint = -1;
+	    ((GridData) tableViewer.getControl().getLayoutData()).grabExcessVerticalSpace = true;
 	    tableViewer.getControl().setVisible(true);
 	}
 

@@ -6,6 +6,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
 import proxy.Proxy;
+import business.services.HistoryBS;
 
 import common.wrappers.Job;
 import common.wrappers.JobSearch;
@@ -44,6 +45,12 @@ public class SearchListenerHelper {
 	    searchParams.setSearchJobTypeCSV(searchWord);
 	    searchParams.setSearchKeyword("");
 	    addJobSearhResultsToView(view, searchParams);
+	    try {
+		HistoryBS.getInstance().addNewSearchEntry(searchWord);
+	    } catch (BusinessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	} else if (searchType.equals(SearchOptionsEnum.BY_KEYWORD.getStringValue())) {
 	    searchParams.setSearchKeyword(searchWord);
 	    searchParams.setSearchJobTypeCSV("");

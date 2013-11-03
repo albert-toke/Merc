@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 
 import proxy.Proxy;
@@ -15,6 +17,7 @@ import faep.controller.listeners.DoubleClickListener;
 import faep.controller.listeners.FaepPreferenceListener;
 import faep.controller.listeners.FaepSelectionListener;
 import faep.controller.listeners.SearchBarListener;
+import faep.controller.provider.SearchHistoryContentProposal;
 import faep.gui.views.FaepView;
 
 public class FaepController {
@@ -24,6 +27,7 @@ public class FaepController {
     private FaepSelectionListener searchListener;
     private DoubleClickListener doubleListener;
     private SearchBarListener searchBarListener;
+    private SearchHistoryContentProposal contentProposal;
 
     private Proxy proxy;
     private List<Job> projectsBidOn;
@@ -60,12 +64,18 @@ public class FaepController {
 	if (searchBarListener == null) {
 	    searchBarListener = new SearchBarListener();
 	}
+	if (contentProposal == null) {
+	    contentProposal = new SearchHistoryContentProposal();
+	}
 	if (view.getSearchButton() != null && !view.getSearchButton().isDisposed() && view.getSearchCombo() != null
 		&& !view.getSearchCombo().isDisposed() && view.getSearchButton().getListeners(SWT.Selection).length == 0) {
 	    view.getSearchButton().addSelectionListener(searchListener);
 	    view.getSearchCombo().addSelectionListener(searchListener);
 	    view.getTableViewer().addDoubleClickListener(doubleListener);
 	    view.getSearchBar().addTraverseListener(searchBarListener);
+	    ContentProposalAdapter adapter = new ContentProposalAdapter(view.getSearchBar(), new TextContentAdapter(),
+		    contentProposal, null, null);
+	    adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 	}
     }
 

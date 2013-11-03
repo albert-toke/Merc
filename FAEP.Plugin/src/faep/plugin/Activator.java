@@ -16,6 +16,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import proxy.Proxy;
+import business.services.HistoryBS;
 
 public class Activator implements BundleActivator {
 
@@ -79,7 +80,7 @@ public class Activator implements BundleActivator {
 	} catch (BackingStoreException e) {
 	    e.printStackTrace();
 	}
-	System.out.println("In za initiation");
+
     }
 
     /*
@@ -88,6 +89,8 @@ public class Activator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext bundleContext) throws Exception {
+	// Save search history before exit
+	HistoryBS.getInstance().saveSearchHistory();
 	Activator.context = null;
     }
 

@@ -30,6 +30,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import proxy.Proxy;
+import business.services.HistoryBS;
 import exceptions.BusinessException;
 import faep.gui.Activator;
 
@@ -187,6 +188,7 @@ public class FaepPreferencePage extends PreferencePage implements IWorkbenchPref
 		    tokenSecret = tokenPair.get("secret");
 		    hintArea.setText(ACCESS_SUCCESSFULL_HINT);
 		    isOkToSave = true;
+		    HistoryBS.getInstance().eraseHistory();
 		} catch (BusinessException ex) {
 		    hintArea.setText(ACCESS_FAILED_HINT);
 		    isOkToSave = false;

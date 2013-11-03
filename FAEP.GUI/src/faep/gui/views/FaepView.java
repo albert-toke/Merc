@@ -49,7 +49,7 @@ public class FaepView extends ViewPart {
     private ScrolledComposite scrolledComposite;
 
     private String[] comboOptions = SearchOptionsEnum.getAllStringValues();
-    private Combo searchCombo;
+    private Combo searchOptionsCombo;
 
     private static final String SETTINGS_MESSAGE = "Your account authorization is not complete! \n"
 	    + "Please open Window -> Preferences -> FAEP Preferences and complete the authorization process.";
@@ -97,9 +97,9 @@ public class FaepView extends ViewPart {
 	Label searchLabel = new Label(mainComposite, SWT.NONE);
 	searchLabel.setText("Search");
 
-	searchCombo = new Combo(mainComposite, SWT.READ_ONLY);
-	searchCombo.setItems(comboOptions);
-	searchCombo.select(0);
+	searchOptionsCombo = new Combo(mainComposite, SWT.READ_ONLY);
+	searchOptionsCombo.setItems(comboOptions);
+	searchOptionsCombo.select(0);
 
 	searchBar = new Text(mainComposite, SWT.BORDER);
 	searchBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -283,7 +283,7 @@ public class FaepView extends ViewPart {
     }
 
     public Combo getSearchCombo() {
-	return this.searchCombo;
+	return this.searchOptionsCombo;
     }
 
     public TableViewer getTableViewer() {

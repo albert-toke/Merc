@@ -103,6 +103,7 @@ public class FaepView extends ViewPart {
 
 	searchBar = new Text(mainComposite, SWT.BORDER);
 	searchBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+	searchBar.setEnabled(false);
 
 	searchButton = new Button(mainComposite, SWT.NONE);
 	GridData buttonGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);

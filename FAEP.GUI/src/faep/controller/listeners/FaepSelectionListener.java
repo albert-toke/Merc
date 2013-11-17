@@ -53,7 +53,8 @@ public class FaepSelectionListener implements SelectionListener {
 		|| selection.equals(SearchOptionsEnum.BY_KEYWORD.getStringValue())) {
 	    view.getSearchBar().setEnabled(true);
 	} else if (selection.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())
-		|| selection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
+		|| selection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())
+		|| selection.equals(SearchOptionsEnum.FAVOURITES.getStringValue())) {
 	    view.getSearchBar().setEnabled(false);
 	}
     }

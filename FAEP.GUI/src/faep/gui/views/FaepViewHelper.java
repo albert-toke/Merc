@@ -24,6 +24,8 @@ import common.wrappers.Bid;
 import common.wrappers.Job;
 import common.wrappers.Project;
 
+import enums.JobStatusEnum;
+
 public class FaepViewHelper {
 
     private static Text text1;
@@ -82,7 +84,7 @@ public class FaepViewHelper {
 	detailsComposite.setLayoutData(compGridData);
 	detailsComposite.setLayout(new GridLayout(4, false));
 
-	text1 = addTextColumns("Status:", project.getState(), detailsComposite, false);
+	text1 = addTextColumns("Status:", project.getStatus().getStringValue(), detailsComposite, false);
 	text1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
 	Text text5 = addTextColumns("Project Creator:", project.getBuyerUserName(), detailsComposite, false);
@@ -146,11 +148,7 @@ public class FaepViewHelper {
      * @param bidPlaced
      * @param sListener
      */
-    public static void creaeteMyBidComposite(Composite parent, Bid bidPlaced, SelectionListener sListener) {
-	boolean editable = false;
-	if (bidPlaced == null) {
-	    editable = true;
-	}
+    public static void creaeteMyBidComposite(Composite parent, Bid bidPlaced, SelectionListener sListener, JobStatusEnum jobStatus) {
 
 	bidPlaceComposite = new Composite(parent, SWT.BORDER);
 	bidPlaceComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 5, 3));
@@ -166,7 +164,7 @@ public class FaepViewHelper {
 
 	bidAmountText = new Text(bidPlaceComposite, SWT.NONE);
 	bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-	bidAmountText.setEditable(editable);
+
 	bidAmountText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 	bidAmountDecorator = addTextDecorator(bidAmountText);
 
@@ -176,7 +174,7 @@ public class FaepViewHelper {
 
 	bidReqTimeText = new Text(bidPlaceComposite, SWT.NONE);
 	bidReqTimeText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-	bidReqTimeText.setEditable(editable);
+
 	bidReqTimeText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 	bidReqTimeDecorator = addTextDecorator(bidReqTimeText);
 
@@ -188,7 +186,7 @@ public class FaepViewHelper {
 	GridData descriptionGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
 	descriptionGridData.heightHint = 75;
 	bidDescriptionText.setLayoutData(descriptionGridData);
-	bidDescriptionText.setEditable(editable);
+
 	bidDescriptionText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 	bidDescriptionDecorator = addTextDecorator(bidDescriptionText);
 
@@ -198,12 +196,28 @@ public class FaepViewHelper {
 
 	bidButton.addSelectionListener(sListener);
 
-	if (!editable) {
-	    bidButton.setText("Withdraw Bid");
-	    setBidTextContent(bidPlaced);
+	String bidButtonText = "";
+	if (bidPlaced == null) {
+	    setFieldsEditaleState(true);
+	    bidButtonText = "Place Bid";
 	} else {
-	    bidButton.setText("Bid on Project");
+	    if (jobStatus == JobStatusEnum.OPEN) {
+		setFieldsEditaleState(false);
+		bidButtonText = "Whitdraw Bid";
+	    } else if (jobStatus == JobStatusEnum.WON) {
+		setFieldsEditaleState(false);
+		bidButtonText = "Accept Project";
+	    }
+	    setBidTextContent(bidPlaced);
 	}
+	bidButton.setText(bidButtonText);
+
+    }
+
+    private static void setFieldsEditaleState(boolean editable) {
+	bidAmountText.setEditable(editable);
+	bidReqTimeText.setEditable(editable);
+	bidDescriptionText.setEditable(editable);
     }
 
     /**

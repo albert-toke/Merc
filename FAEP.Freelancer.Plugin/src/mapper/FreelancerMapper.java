@@ -24,6 +24,7 @@ import common.wrappers.Project;
 import common.wrappers.ProjectPublicMessage;
 
 import enums.DirectionEnum;
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public class FreelancerMapper {
@@ -263,7 +264,7 @@ public class FreelancerMapper {
 	    project.setBuyerId(buyer.get("id").asLong());
 	    project.setBuyerUserName(buyer.get("username").asText());
 	    project.setBuyerUrl(buyer.get("url").asText());
-	    project.setState(convertProjectState(root.get("state").asText()));
+	    project.setStatus(convertProjectState(root.get("state").asText()));
 	    project.setShortDescription(root.get("short_descr").asText());
 	    project.setAdditionalOptions(convertAdditionalOptions(root.get("options")));
 	    project.setMinBudget(root.get("budget").get("min").asDouble());
@@ -309,29 +310,24 @@ public class FreelancerMapper {
 	return map;
     }
 
-    private String convertProjectState(String state) {
-	String fullState;
+    private JobStatusEnum convertProjectState(String state) {
+	JobStatusEnum fullState;
 	switch (state) {
 	case "A":
-	    fullState = "Active";
+	    fullState = JobStatusEnum.OPEN;
 	    break;
 	case "F":
-	    fullState = "Frozen";
+	    fullState = JobStatusEnum.FROZEN;
 	    break;
 	case "C":
-	    fullState = "Closed";
+	    fullState = JobStatusEnum.CLOSED;
 	    break;
 	case "P":
-	    fullState = "Pending";
+	    fullState = JobStatusEnum.PENDING;
 	    break;
-	case "R":
-	    fullState = "Rejected";
-	    break;
-	case "D":
-	    fullState = "Draft";
-	    break;
+	// There are two remaining states but those cant be reached in the application
 	default:
-	    fullState = "Unknown State";
+	    fullState = null;
 	}
 	return fullState;
     }
@@ -462,24 +458,32 @@ public class FreelancerMapper {
      * @return A list of Project POJOs on which there was placed a bid.
      * @throws Exception
      */
-    public List<Job> convertBiddedProjectsToSystem(String jsonString) throws BusinessException {
+    public List<Job> convertBiddedProjectsToSystem(String jsonString, JobStatusEnum status) throws BusinessException {
 	List<Job> projects = null;
 	try {
 	    JsonNode root = jsonMapper.readTree(jsonString).get("json-result");
 	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
 	    projects = new ArrayList<Job>();
 	    for (JsonNode node : root.path("items")) {
-		Job project = new Job();
+		Job job = new Job();
 		// project.setAdditionalStatus(node.get("additionalstatus").asText());
 		// project.setEndDate(convertToDate(node.get("enddate").asText()));
 		// project.setOwnerUserId(node.get("owneruserid").asLong());
 		// project.setOwnerUserName(node.get("ownerusername").asText());
-		project.setProjectId(node.get("projectid").asLong());
-		project.setProjectName(node.get("projectname").asText());
-		project.setProjectURL(node.get("projecturl").asText());
-		project.setProvider(PROVIDER);
-		// project.setStatus(node.get("status").asText());
-		projects.add(project);
+		job.setProjectId(node.get("projectid").asLong());
+		job.setProjectName(node.get("projectname").asText());
+		job.setProjectURL(node.get("projecturl").asText());
+		job.setProvider(PROVIDER);
+		if (status == JobStatusEnum.OPEN) {
+		    if (node.get("status").asText().equals("F")) {
+			job.setStatus(JobStatusEnum.FROZEN);
+		    } else {
+			job.setStatus(JobStatusEnum.OPEN);
+		    }
+		} else {
+		    job.setStatus(status);
+		}
+		projects.add(job);
 	    }
 	} catch (JsonProcessingException e) {
 	    throw new BusinessException(e);
@@ -487,6 +491,35 @@ public class FreelancerMapper {
 	    throw new BusinessException(e);
 	}
 	return projects;
+    }
+
+    public JobStatusEnum convertBiddedProjectStatusToSystem(BiddedProjectStatusEnum reqStatus, String respStatus) {
+	JobStatusEnum jobStatus;
+	switch (reqStatus) {
+	case FORZEN_WAITING_UR_ACTION:
+	    jobStatus = JobStatusEnum.WON;
+	    break;
+	case CLOSED_CANCELED:
+	    jobStatus = JobStatusEnum.CLOSED;
+	    break;
+	case CLOSED_WON:
+	    jobStatus = JobStatusEnum.ACTIVE;
+	    break;
+	case CLOSED_LOST:
+	    jobStatus = JobStatusEnum.CLOSED_LOST;
+	    break;
+	case OPEN_AND_FROZEN:
+	    if (respStatus.equals("Open")) {
+		jobStatus = JobStatusEnum.OPEN;
+	    } else {
+		jobStatus = JobStatusEnum.FROZEN;
+	    }
+	default:
+	    jobStatus = null;
+	    break;
+
+	}
+	return jobStatus;
     }
 
     public long convertAccountDetailsToUserId(String jsonString) throws BusinessException {
@@ -501,4 +534,5 @@ public class FreelancerMapper {
 	}
 	return userId;
     }
+
 }

@@ -109,7 +109,7 @@ public class FaepExpandItem extends ExpandItem {
 	this.setHeight(300);
 	composite.setLayout(new GridLayout(4, false));
 
-	text1 = addTextColumns("Status:", project.getState(), composite, false);
+	text1 = addTextColumns("Status:", project.getStatus().getStringValue(), composite, false);
 
 	Text text5 = addTextColumns("Project Creator:", project.getBuyerUserName(), composite, false);
 	text5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));

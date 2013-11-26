@@ -52,10 +52,16 @@ public class FaepSelectionListener implements SelectionListener {
 	if (selection.equals(SearchOptionsEnum.BY_TYPE.getStringValue())
 		|| selection.equals(SearchOptionsEnum.BY_KEYWORD.getStringValue())) {
 	    view.getSearchBar().setEnabled(true);
+	    if (view.getSearchBar().getText().isEmpty()) {
+		view.getSearchButton().setEnabled(false);
+	    }
+
 	} else if (selection.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())
 		|| selection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())
 		|| selection.equals(SearchOptionsEnum.FAVOURITES.getStringValue())) {
 	    view.getSearchBar().setEnabled(false);
+	    view.getSearchButton().setEnabled(true);
+	    view.getSearchBar().setText("");
 	}
     }
 

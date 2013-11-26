@@ -18,6 +18,7 @@ import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public class ODeskGateway extends AbstractApiGateway {
@@ -152,6 +153,18 @@ public class ODeskGateway extends AbstractApiGateway {
     public long getUserIdFromProvider() throws BusinessException {
 	// TODO Auto-generated method stub
 	return 0;
+    }
+
+    @Override
+    public List<Job> getWonBiddedProjects() throws BusinessException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException {
+	// TODO Auto-generated method stub
+	return null;
     }
 
 }

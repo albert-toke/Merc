@@ -14,12 +14,14 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -32,6 +34,7 @@ import common.wrappers.Bid;
 import common.wrappers.Job;
 import common.wrappers.Project;
 
+import enums.JobStatusEnum;
 import faep.gui.Activator;
 import faep.gui.enums.SearchOptionsEnum;
 
@@ -47,6 +50,8 @@ public class FaepView extends ViewPart {
     private TableViewer tableViewer;
     private Composite mainComposite;
     private ScrolledComposite scrolledComposite;
+    private Color green = new Color(Display.getCurrent(), 173, 214, 103);
+    private Color red = new Color(Display.getCurrent(), 214, 103, 103);
 
     private String[] comboOptions = SearchOptionsEnum.getAllStringValues();
     private Combo searchOptionsCombo;
@@ -156,13 +161,24 @@ public class FaepView extends ViewPart {
 	recalculateScrolledCompositeSize();
     }
 
+    public void createProjectDetailsWithMessages() {
+
+    }
+
     private void createProjectDetailsComposite(Project project, Job job, SelectionListener sListener, Bid bidPlaced) {
 	tableViewer.getControl().setVisible(false);
 	((GridData) tableViewer.getControl().getLayoutData()).heightHint = 0;
 	((GridData) tableViewer.getControl().getLayoutData()).grabExcessVerticalSpace = false;
 	FaepViewHelper.createInformationBar(mainComposite, job, sListener);
 	FaepViewHelper.createDetailsComposite(mainComposite, project, sListener);
-	FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener);
+	// If the job status is null then the call was made from one of the search options('Favorites','Search by Keyword','Search
+	// by Type'). If it is not null then the call was made from the "my bids" search option ('Bidded projects' or 'Active
+	// projects').
+	if (job.getStatus() == null) {
+	    FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, project.getStatus());
+	} else {
+	    FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, job.getStatus());
+	}
     }
 
     public void createTableViewer() {
@@ -174,7 +190,6 @@ public class FaepView extends ViewPart {
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(false);
 	    tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
 	    createColumns(mainComposite);
 
 	    GridData tableGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
@@ -191,10 +206,10 @@ public class FaepView extends ViewPart {
     }
 
     private void createColumns(Composite parent) {
-	String[] titles = { "Project Name", "Bid Count", "Start Date", "Job Type" };
-	int[] bounds = { 200, 50, 100, 150 };
+	String[] titles = { "Project Name", "Bid Count", "Start Date", "Job Type", "Status" };
+	int[] bounds = { 200, 50, 100, 150, 100 };
 
-	TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
+	TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0]);
 	col.setLabelProvider(new ColumnLabelProvider() {
 	    @Override
 	    public String getText(Object element) {
@@ -204,9 +219,22 @@ public class FaepView extends ViewPart {
 		}
 		return super.getText(element);
 	    }
+
+	    @Override
+	    public Color getBackground(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+		    if (job.getStatus() == JobStatusEnum.WON) {
+			return green;
+		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
+			return red;
+		    }
+		}
+		return super.getBackground(element);
+	    }
 	});
 
-	col = createTableViewerColumn(titles[1], bounds[1], 1);
+	col = createTableViewerColumn(titles[1], bounds[1]);
 	col.setLabelProvider(new ColumnLabelProvider() {
 	    @Override
 	    public String getText(Object element) {
@@ -216,21 +244,50 @@ public class FaepView extends ViewPart {
 		}
 		return super.getText(element);
 	    }
+
+	    @Override
+	    public Color getBackground(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+		    if (job.getStatus() == JobStatusEnum.WON) {
+			return green;
+		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
+			return red;
+		    }
+		}
+		return super.getBackground(element);
+	    }
 	});
 
-	col = createTableViewerColumn(titles[2], bounds[2], 2);
+	col = createTableViewerColumn(titles[2], bounds[2]);
 	col.setLabelProvider(new ColumnLabelProvider() {
 	    @Override
 	    public String getText(Object element) {
 		if (element instanceof Job) {
 		    Job job = (Job) element;
-		    return job.getStartDate().toString();
+		    if (job.getStartDate() != null) {
+			return job.getStartDate().toString();
+		    }
+		    return "";
 		}
 		return super.getText(element);
 	    }
+
+	    @Override
+	    public Color getBackground(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+		    if (job.getStatus() == JobStatusEnum.WON) {
+			return green;
+		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
+			return red;
+		    }
+		}
+		return super.getBackground(element);
+	    }
 	});
 
-	col = createTableViewerColumn(titles[3], bounds[3], 3);
+	col = createTableViewerColumn(titles[3], bounds[3]);
 	col.setLabelProvider(new ColumnLabelProvider() {
 	    @Override
 	    public String getText(Object element) {
@@ -240,10 +297,50 @@ public class FaepView extends ViewPart {
 		}
 		return super.getText(element);
 	    }
+
+	    @Override
+	    public Color getBackground(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+		    if (job.getStatus() == JobStatusEnum.WON) {
+			return green;
+		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
+			return red;
+		    }
+		}
+		return super.getBackground(element);
+	    }
+	});
+
+	col = createTableViewerColumn(titles[4], bounds[4]);
+	col.setLabelProvider(new ColumnLabelProvider() {
+	    @Override
+	    public String getText(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+
+		    return job.getStatus().getStringValue();
+		}
+		return "";
+	    }
+
+	    @Override
+	    public Color getBackground(Object element) {
+		Job job = (Job) element;
+		if (job.getStatus() != null) {
+		    if (job.getStatus() == JobStatusEnum.WON) {
+			return green;
+		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
+			return red;
+		    }
+		}
+		return super.getBackground(element);
+	    }
+
 	});
     }
 
-    private TableViewerColumn createTableViewerColumn(String title, int bound, final int colNumber) {
+    private TableViewerColumn createTableViewerColumn(String title, int bound) {
 	final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
 	final TableColumn column = viewerColumn.getColumn();
 	column.setText(title);

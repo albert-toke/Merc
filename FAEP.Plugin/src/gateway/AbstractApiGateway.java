@@ -25,6 +25,7 @@ import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
 import crud.DAO;
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public abstract class AbstractApiGateway {
@@ -81,9 +82,13 @@ public abstract class AbstractApiGateway {
 
     public abstract List<Job> getBiddedProjects() throws BusinessException;
 
+    public abstract List<Job> getWonBiddedProjects() throws BusinessException;
+
     public abstract String getProvider();
 
     public abstract long getUserIdFromProvider() throws BusinessException;
+
+    public abstract JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException;
 
     // Implemented Methods
     /**

@@ -16,7 +16,8 @@ import exceptions.BusinessException;
 import faep.controller.listeners.DoubleClickListener;
 import faep.controller.listeners.FaepPreferenceListener;
 import faep.controller.listeners.FaepSelectionListener;
-import faep.controller.listeners.SearchBarListener;
+import faep.controller.listeners.SearchBarKeyListener;
+import faep.controller.listeners.SearchBarTraverseListener;
 import faep.controller.provider.SearchHistoryContentProposal;
 import faep.gui.views.FaepView;
 
@@ -26,8 +27,9 @@ public class FaepController {
     private IEclipsePreferences preferences;
     private FaepSelectionListener searchListener;
     private DoubleClickListener doubleListener;
-    private SearchBarListener searchBarListener;
+    private SearchBarTraverseListener searchBarListener;
     private SearchHistoryContentProposal contentProposal;
+    private SearchBarKeyListener keyListener;
 
     private Proxy proxy;
     private List<Job> projectsBidOn;
@@ -62,10 +64,13 @@ public class FaepController {
 	    doubleListener = new DoubleClickListener();
 	}
 	if (searchBarListener == null) {
-	    searchBarListener = new SearchBarListener();
+	    searchBarListener = new SearchBarTraverseListener();
 	}
 	if (contentProposal == null) {
 	    contentProposal = new SearchHistoryContentProposal();
+	}
+	if (keyListener == null) {
+	    keyListener = new SearchBarKeyListener();
 	}
 	if (view.getSearchButton() != null && !view.getSearchButton().isDisposed() && view.getSearchCombo() != null
 		&& !view.getSearchCombo().isDisposed() && view.getSearchButton().getListeners(SWT.Selection).length == 0) {
@@ -73,6 +78,7 @@ public class FaepController {
 	    view.getSearchCombo().addSelectionListener(searchListener);
 	    view.getTableViewer().addDoubleClickListener(doubleListener);
 	    view.getSearchBar().addTraverseListener(searchBarListener);
+	    view.getSearchBar().addKeyListener(keyListener);
 	    ContentProposalAdapter adapter = new ContentProposalAdapter(view.getSearchBar(), new TextContentAdapter(),
 		    contentProposal, null, null);
 	    adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);

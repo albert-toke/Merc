@@ -65,6 +65,7 @@ public class SearchListenerHelper {
 	} else if (searchType.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())) {
 	    addBiddedProjectsToView(view);
 	} else if (searchType.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
+	    addActiveProjects(view);
 	}
     }
 
@@ -76,6 +77,16 @@ public class SearchListenerHelper {
     private void addBiddedProjectsToView(FaepView view) {
 	try {
 	    jobList = proxy.getBiddedProjects();
+	    view.getTableViewer().setInput(jobList);
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private void addActiveProjects(FaepView view) {
+	try {
+	    jobList = proxy.getWonBiddedProjects();
+	    view.getTableViewer().setInput(jobList);
 	} catch (BusinessException e) {
 	    e.printStackTrace();
 	}

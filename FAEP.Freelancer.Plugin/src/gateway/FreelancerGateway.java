@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mapper.BiddedProjectStatusEnum;
 import mapper.FreelancerMapper;
 
 import org.scribe.builder.ServiceBuilder;
@@ -30,6 +31,7 @@ import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public class FreelancerGateway extends AbstractApiGateway {
@@ -146,6 +148,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return jobDTOList;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Bid> getBidsForProject(long projectId) throws BusinessException {
 	List<Bid> bidDTOList = null;
@@ -159,6 +164,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return bidDTOList;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ProjectPublicMessage> getPublicMessagesForProject(long projectId) throws BusinessException {
 	List<ProjectPublicMessage> publicMessages = null;
@@ -172,6 +180,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return publicMessages;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void postPublicMessagesOnProject(ProjectPostMessage message) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Project + "/" + "postPublicMessage" + EXT;
@@ -184,6 +195,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Notification> getNotifications() throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Notification + "/" + "getNotification" + EXT;
@@ -195,6 +209,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return notifications;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Project getProjectDetails(long projectId) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Project + "/" + "getProjectDetails" + EXT;
@@ -208,6 +225,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return projectDetails;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Message> getMessages(long projectId) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "getInboxMessages" + EXT;
@@ -223,6 +243,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return messages;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sendMessage(OutgoingMessage msg) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "sendMessage" + EXT;
@@ -236,6 +259,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void placeBid(BidRequest bid) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "placeBidOnProject" + EXT;
@@ -252,6 +278,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void retractBidFromProject(long projectId) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "retractBidFromProject" + EXT;
@@ -263,6 +292,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void acceptBidWon(long projectId, int state) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "acceptBidWon" + EXT;
@@ -275,6 +307,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getUnreadMessageCount() throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "getUnreadCount" + EXT;
@@ -285,6 +320,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return mapper.convertUnreadMessageCount(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Message> getSentMessages() throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "getSentMessages" + EXT;
@@ -295,6 +333,9 @@ public class FreelancerGateway extends AbstractApiGateway {
 	return mapper.convertSentMessagesToSystem(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void markMessageAsRead(long messageId) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "markMessageAsRead" + EXT;
@@ -306,22 +347,60 @@ public class FreelancerGateway extends AbstractApiGateway {
 	mapper.convertConfirmation(response.getBody());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Job> getBiddedProjects() throws BusinessException {
+
+	List<Job> finalBidList = getBiddProjectsByStatus(BiddedProjectStatusEnum.FORZEN_WAITING_UR_ACTION, JobStatusEnum.WON);
+	// Specific situation where this occures is still unknown (No Documentation in the Freelancer API).
+	// List<Job> pendingBids = getBiddProjectsByStatus(BiddedProjectStatusEnum.AWAITING_BUYER_ACTION, JobStatusEnum.PENDING);
+	List<Job> openBids = getBiddProjectsByStatus(BiddedProjectStatusEnum.OPEN_AND_FROZEN, JobStatusEnum.OPEN);
+	List<Job> activeWonBids = getBiddProjectsByStatus(BiddedProjectStatusEnum.CLOSED_WON, JobStatusEnum.ACTIVE);
+	List<Job> closedProjects = getBiddProjectsByStatus(BiddedProjectStatusEnum.ALL, JobStatusEnum.CLOSED);
+
+	// Removing from the Open and Frozen bids the ones that are awaiting user action.
+	openBids.removeAll(finalBidList);
+	// Adding the remaining to the final list.
+	finalBidList.addAll(openBids);
+	// Removing all the active and the content of finalBidList from all the bids.
+	closedProjects.removeAll(activeWonBids);
+	closedProjects.removeAll(finalBidList);
+	// Adding the remaining bids to the final list.
+	finalBidList.addAll(closedProjects);
+	return finalBidList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Job> getWonBiddedProjects() throws BusinessException {
+	return getBiddProjectsByStatus(BiddedProjectStatusEnum.CLOSED_WON, JobStatusEnum.ACTIVE);
+    }
+
+    private List<Job> getBiddProjectsByStatus(BiddedProjectStatusEnum status, JobStatusEnum newStatus) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "getProjectListForPlacedBids" + EXT;
 	OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
-	request.addQuerystringParameter("status", Integer.toString(1));
+	request.addQuerystringParameter("status", status.getStringValue());
 	service.signRequest(accessToken, request);
 	request.addHeader("GData-Version", "3.0");
 	Response response = request.send();
-	return mapper.convertBiddedProjectsToSystem(response.getBody());
+	return mapper.convertBiddedProjectsToSystem(response.getBody(), newStatus);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getProvider() {
 	return "freelancer";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getUserIdFromProvider() throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Profile + "/" + "getAccountDetails" + EXT;
@@ -331,4 +410,14 @@ public class FreelancerGateway extends AbstractApiGateway {
 	Response response = request.send();
 	return mapper.convertAccountDetailsToUserId(response.getBody());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
 }

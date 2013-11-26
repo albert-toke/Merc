@@ -43,18 +43,17 @@ public class DoubleClickListener implements IDoubleClickListener {
     @Override
     public void doubleClick(DoubleClickEvent event) {
 	// The only type of element that can be part of the selection is Job, hence there is no verification if the selection is
-	// instance of the Job Class.
+	// an instance of the Job Class.
 	IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 	Job job = (Job) selection.getFirstElement();
 
 	String comboSelection = view.getSearchCombo().getText();
-	if (comboSelection.equals(SearchOptionsEnum.BY_TYPE.getStringValue())
-		|| comboSelection.equals(SearchOptionsEnum.BY_KEYWORD.getStringValue())) {
-	    getInfoForKeywordAndJobtypeSelection(job);
-	} else if (comboSelection.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())) {
-	    // TODO my bid projects
-	} else if (comboSelection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
+
+	if (comboSelection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
 	    // TODO actual projects
+	} else {
+	    // Valid for the remaining 4 Cases. (BY_TYPE,BY_KEYWORD,PROJECTS_BID_ON and FAVOURITES)
+	    getInfoForKeywordAndJobtypeSelection(job);
 	}
 
     }
@@ -76,6 +75,7 @@ public class DoubleClickListener implements IDoubleClickListener {
 		}
 		if (myBid != null) {
 		    bidList.remove(myBid);
+		    proxy.getMyBidStatusForProject(job.getProjectId(), job.getProvider());
 		}
 	    }
 

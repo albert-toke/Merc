@@ -1,5 +1,6 @@
 package proxy;
 
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 import gateway.AbstractApiGateway;
 
@@ -188,6 +189,14 @@ public class Proxy {
 	return projects;
     }
 
+    public List<Job> getWonBiddedProjects() throws BusinessException {
+	List<Job> projects = new ArrayList<Job>();
+	for (AbstractApiGateway gateway : gateways) {
+	    projects.addAll(gateway.getWonBiddedProjects());
+	}
+	return projects;
+    }
+
     public AbstractApiGateway getGatewayByProvider(String provider) {
 	AbstractApiGateway gateway = null;
 	for (AbstractApiGateway gate : gateways) {
@@ -204,6 +213,11 @@ public class Proxy {
 	    providers.add(gt.getProvider());
 	}
 	return providers;
+    }
+
+    public JobStatusEnum getMyBidStatusForProject(long projectId, String provider) throws BusinessException {
+	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	return gateway.getMyBidStatusForProject(projectId);
     }
 
     // Test method

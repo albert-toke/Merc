@@ -25,6 +25,7 @@ import common.wrappers.Job;
 import common.wrappers.Project;
 
 import enums.JobStatusEnum;
+import faep.gui.enums.ActionButtonOptionsEnum;
 
 public class FaepViewHelper {
 
@@ -33,6 +34,7 @@ public class FaepViewHelper {
     private static Text text10;
     private static Button returnButton;
     private static Button bidButton;
+    private static Button declineButton;
     private static Composite infoComposite;
     private static Composite detailsComposite;
     private static Composite bidPlaceComposite;
@@ -191,7 +193,8 @@ public class FaepViewHelper {
 	bidDescriptionDecorator = addTextDecorator(bidDescriptionText);
 
 	bidButton = new Button(bidPlaceComposite, SWT.PUSH);
-	bidButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1));
+	bidButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+	// TODO width with grid data
 	bidButton.setSize(130, SWT.DEFAULT);
 
 	bidButton.addSelectionListener(sListener);
@@ -199,14 +202,24 @@ public class FaepViewHelper {
 	String bidButtonText = "";
 	if (bidPlaced == null) {
 	    setFieldsEditaleState(true);
-	    bidButtonText = "Place Bid";
+	    bidButtonText = ActionButtonOptionsEnum.PLACE_BID.getStringValue();
 	} else {
 	    if (jobStatus == JobStatusEnum.OPEN) {
 		setFieldsEditaleState(false);
-		bidButtonText = "Whitdraw Bid";
+		bidButtonText = ActionButtonOptionsEnum.WITHDRAW.getStringValue();
 	    } else if (jobStatus == JobStatusEnum.WON) {
 		setFieldsEditaleState(false);
-		bidButtonText = "Accept Project";
+		declineButton = new Button(bidPlaceComposite, SWT.PUSH);
+		declineButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+		declineButton.setSize(130, SWT.DEFAULT);
+		declineButton.setText(ActionButtonOptionsEnum.DECLINE.getStringValue());
+		declineButton.addSelectionListener(sListener);
+		bidButtonText = ActionButtonOptionsEnum.ACCEPT.getStringValue();
+	    } else if (jobStatus == JobStatusEnum.ACTIVE) {
+		bidButtonText = ActionButtonOptionsEnum.POST_MESSAGE.getStringValue();
+	    } else if (jobStatus == JobStatusEnum.CLOSED) {
+		bidButton.setVisible(false);
+		setFieldsEditaleState(false);
 	    }
 	    setBidTextContent(bidPlaced);
 	}
@@ -297,7 +310,6 @@ public class FaepViewHelper {
 	bidAmountText.setEditable(false);
 	bidDescriptionText.setEditable(false);
 	bidReqTimeText.setEditable(false);
-	bidButton.setText("Cancel Bid");
     }
 
     public static void createAllBidComposite(Composite parent, List<Bid> bidList) {
@@ -342,6 +354,10 @@ public class FaepViewHelper {
 
     public static Button getBidButton() {
 	return bidButton;
+    }
+
+    public static Button getDeclineButton() {
+	return declineButton;
     }
 
     public static Text getBidAmountText() {

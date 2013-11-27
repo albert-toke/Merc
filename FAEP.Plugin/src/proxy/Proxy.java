@@ -163,9 +163,14 @@ public class Proxy {
 	gateway.retractBidFromProject(projectId);
     }
 
-    public void acceptBidWon(long projectId, int state, String provider) throws BusinessException {
+    public void acceptBidWon(long projectId, String provider) throws BusinessException {
 	AbstractApiGateway gateway = getGatewayByProvider(provider);
-	gateway.acceptBidWon(projectId, state);
+	gateway.acceptBidWon(projectId);
+    }
+
+    public void declineBidWon(long projectId, String provider) throws BusinessException {
+	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	gateway.declineBidWon(projectId);
     }
 
     public List<Message> getSentMessages() throws BusinessException {

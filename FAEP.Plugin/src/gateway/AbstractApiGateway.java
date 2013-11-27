@@ -72,7 +72,9 @@ public abstract class AbstractApiGateway {
 
     public abstract void retractBidFromProject(long projectId) throws BusinessException;
 
-    public abstract void acceptBidWon(long projectId, int state) throws BusinessException;
+    public abstract void acceptBidWon(long projectId) throws BusinessException;
+
+    public abstract void declineBidWon(long projectId) throws BusinessException;
 
     public abstract int getUnreadMessageCount() throws BusinessException;
 

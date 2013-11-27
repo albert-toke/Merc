@@ -93,7 +93,7 @@ public class FaepView extends ViewPart {
 	scrolledComposite.setExpandHorizontal(true);
 	scrolledComposite.setExpandVertical(true);
 
-	// Composite which contains the Searchbar and the Expandbar
+	// Composite which contains the Searchbar
 	mainComposite = new Composite(scrolledComposite, SWT.NONE);
 	GridLayout glComposite = new GridLayout(4, false);
 	glComposite.verticalSpacing = 1;

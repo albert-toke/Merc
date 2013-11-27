@@ -113,12 +113,6 @@ public class ODeskGateway extends AbstractApiGateway {
     }
 
     @Override
-    public void acceptBidWon(long projectId, int state) throws BusinessException {
-	// TODO Auto-generated method stub
-
-    }
-
-    @Override
     public int getUnreadMessageCount() throws BusinessException {
 	// TODO Auto-generated method stub
 	return 0;
@@ -165,6 +159,18 @@ public class ODeskGateway extends AbstractApiGateway {
     public JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException {
 	// TODO Auto-generated method stub
 	return null;
+    }
+
+    @Override
+    public void acceptBidWon(long projectId) throws BusinessException {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void declineBidWon(long projectId) throws BusinessException {
+	// TODO Auto-generated method stub
+
     }
 
 }

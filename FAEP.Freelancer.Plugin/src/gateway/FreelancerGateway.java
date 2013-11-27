@@ -296,11 +296,26 @@ public class FreelancerGateway extends AbstractApiGateway {
      * {@inheritDoc}
      */
     @Override
-    public void acceptBidWon(long projectId, int state) throws BusinessException {
+    public void acceptBidWon(long projectId) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "acceptBidWon" + EXT;
 	OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
 	request.addQuerystringParameter("projectid", Long.toString(projectId));
-	request.addQuerystringParameter("state", Long.toString(state));
+	request.addQuerystringParameter("state", "1");
+	service.signRequest(accessToken, request);
+	request.addHeader("GData-Version", "3.0");
+	Response response = request.send();
+	mapper.convertConfirmation(response.getBody());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void declineBidWon(long projectId) throws BusinessException {
+	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Freelancer + "/" + "acceptBidWon" + EXT;
+	OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
+	request.addQuerystringParameter("projectid", Long.toString(projectId));
+	request.addQuerystringParameter("state", "0");
 	service.signRequest(accessToken, request);
 	request.addHeader("GData-Version", "3.0");
 	Response response = request.send();

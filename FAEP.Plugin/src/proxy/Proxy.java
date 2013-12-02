@@ -1,6 +1,5 @@
 package proxy;
 
-import enums.JobStatusEnum;
 import exceptions.BusinessException;
 import gateway.AbstractApiGateway;
 
@@ -15,7 +14,6 @@ import common.wrappers.Job;
 import common.wrappers.JobSearch;
 import common.wrappers.Message;
 import common.wrappers.Notification;
-import common.wrappers.OutgoingMessage;
 import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
@@ -132,11 +130,11 @@ public class Proxy {
     }
 
     // ujrairni, nem kell projectid
-    public List<Message> getMessages(long projectId, String provider) throws BusinessException {
+    public List<Message> getMessages(long projectId, long ownerId, String provider) throws BusinessException {
 
 	List<Message> messages = new ArrayList<Message>();
 	AbstractApiGateway gateway = getGatewayByProvider(provider);
-	messages.addAll(gateway.getMessages(projectId));
+	messages.addAll(gateway.getProjectMessages(projectId, ownerId));
 	return messages;
     }
 
@@ -148,7 +146,7 @@ public class Proxy {
 	return count;
     }
 
-    public void sendMessage(OutgoingMessage msg) throws BusinessException {
+    public void sendMessage(Message msg) throws BusinessException {
 	AbstractApiGateway gateway = getGatewayByProvider(msg.getProvider());
 	gateway.sendMessage(msg);
     }
@@ -218,11 +216,6 @@ public class Proxy {
 	    providers.add(gt.getProvider());
 	}
 	return providers;
-    }
-
-    public JobStatusEnum getMyBidStatusForProject(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
-	return gateway.getMyBidStatusForProject(projectId);
     }
 
     // Test method

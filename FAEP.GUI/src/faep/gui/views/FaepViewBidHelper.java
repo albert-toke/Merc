@@ -27,7 +27,7 @@ import common.wrappers.Project;
 import enums.JobStatusEnum;
 import faep.gui.enums.ActionButtonOptionsEnum;
 
-public class FaepViewHelper {
+public class FaepViewBidHelper {
 
     private static Text text1;
     private static Text text9;
@@ -45,8 +45,7 @@ public class FaepViewHelper {
     private static ControlDecoration bidAmountDecorator;
     private static ControlDecoration bidReqTimeDecorator;
     private static ControlDecoration bidDescriptionDecorator;
-    private static long projectId;
-    private static String provider;
+    private static Project project;
 
     public static Composite createInformationBar(Composite parent, Job job, SelectionListener listener) {
 	infoComposite = new Composite(parent, SWT.NONE);
@@ -72,12 +71,11 @@ public class FaepViewHelper {
 	projectNameText.setEditable(false);
 	projectNameText.setEnabled(false);
 
-	projectId = job.getProjectId();
-	provider = job.getProvider();
 	return infoComposite;
     }
 
     public static Composite createDetailsComposite(Composite parent, Project project, SelectionListener listener) {
+	FaepViewBidHelper.project = project;
 	detailsComposite = new Composite(parent, SWT.NONE);
 
 	GridData compGridData = new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1);
@@ -201,14 +199,14 @@ public class FaepViewHelper {
 
 	String bidButtonText = "";
 	if (bidPlaced == null) {
-	    setFieldsEditaleState(true);
+	    setFieldsEditableState(true);
 	    bidButtonText = ActionButtonOptionsEnum.PLACE_BID.getStringValue();
 	} else {
 	    if (jobStatus == JobStatusEnum.OPEN) {
-		setFieldsEditaleState(false);
+		setFieldsEditableState(false);
 		bidButtonText = ActionButtonOptionsEnum.WITHDRAW.getStringValue();
 	    } else if (jobStatus == JobStatusEnum.WON) {
-		setFieldsEditaleState(false);
+		setFieldsEditableState(false);
 		declineButton = new Button(bidPlaceComposite, SWT.PUSH);
 		declineButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 		declineButton.setSize(130, SWT.DEFAULT);
@@ -216,10 +214,11 @@ public class FaepViewHelper {
 		declineButton.addSelectionListener(sListener);
 		bidButtonText = ActionButtonOptionsEnum.ACCEPT.getStringValue();
 	    } else if (jobStatus == JobStatusEnum.ACTIVE) {
-		bidButtonText = ActionButtonOptionsEnum.POST_MESSAGE.getStringValue();
+		bidButtonText = ActionButtonOptionsEnum.REQUEST_CANCEL.getStringValue();
+		setFieldsEditableState(false);
 	    } else if (jobStatus == JobStatusEnum.CLOSED) {
 		bidButton.setVisible(false);
-		setFieldsEditaleState(false);
+		setFieldsEditableState(false);
 	    }
 	    setBidTextContent(bidPlaced);
 	}
@@ -227,7 +226,7 @@ public class FaepViewHelper {
 
     }
 
-    private static void setFieldsEditaleState(boolean editable) {
+    public static void setFieldsEditableState(boolean editable) {
 	bidAmountText.setEditable(editable);
 	bidReqTimeText.setEditable(editable);
 	bidDescriptionText.setEditable(editable);
@@ -306,12 +305,6 @@ public class FaepViewHelper {
 	}
     }
 
-    public static void dissableMyBidWidgets() {
-	bidAmountText.setEditable(false);
-	bidDescriptionText.setEditable(false);
-	bidReqTimeText.setEditable(false);
-    }
-
     public static void createAllBidComposite(Composite parent, List<Bid> bidList) {
 	bidAllComposite = new Composite(parent, SWT.BORDER);
 	bidAllComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 5, 1));
@@ -372,12 +365,8 @@ public class FaepViewHelper {
 	return bidDescriptionText;
     }
 
-    public static long getProjectId() {
-	return projectId;
-    }
-
-    public static String getProvider() {
-	return provider;
+    public static Project getProject() {
+	return project;
     }
 
     public static void disposeProjectComposites() {

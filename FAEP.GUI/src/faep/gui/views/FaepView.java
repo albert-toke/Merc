@@ -32,6 +32,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import common.wrappers.Bid;
 import common.wrappers.Job;
+import common.wrappers.Message;
 import common.wrappers.Project;
 
 import enums.JobStatusEnum;
@@ -50,6 +51,7 @@ public class FaepView extends ViewPart {
     private TableViewer tableViewer;
     private Composite mainComposite;
     private ScrolledComposite scrolledComposite;
+    private Label searchLabel;
     private Color green = new Color(Display.getCurrent(), 173, 214, 103);
     private Color red = new Color(Display.getCurrent(), 214, 103, 103);
 
@@ -99,7 +101,7 @@ public class FaepView extends ViewPart {
 	glComposite.verticalSpacing = 1;
 	mainComposite.setLayout(glComposite);
 
-	Label searchLabel = new Label(mainComposite, SWT.NONE);
+	searchLabel = new Label(mainComposite, SWT.NONE);
 	searchLabel.setText("Search");
 
 	searchOptionsCombo = new Combo(mainComposite, SWT.READ_ONLY);
@@ -156,33 +158,55 @@ public class FaepView extends ViewPart {
     public void createProjectDetailsWithBids(Project project, Job job, SelectionListener sListener, List<Bid> bidList,
 	    Bid bidPlaced) {
 	createProjectDetailsComposite(project, job, sListener, bidPlaced);
-	FaepViewHelper.createAllBidComposite(mainComposite, bidList);
+	FaepViewBidHelper.createAllBidComposite(mainComposite, bidList);
 	parent.layout(true, true);
 	recalculateScrolledCompositeSize();
     }
 
-    public void createProjectDetailsWithMessages() {
-
+    /**
+     * 
+     * @param project
+     * @param job
+     * @param sListener
+     * @param messageList
+     * @param bidPlaced
+     */
+    public void createProjectDetailsWithMessages(Project project, Job job, SelectionListener sListener,
+	    List<Message> messageList, Bid bidPlaced) {
+	createProjectDetailsComposite(project, job, sListener, bidPlaced);
+	FaepViewMessageHelper.createNewMessageComposite(mainComposite, sListener);
+	FaepViewMessageHelper.createAllMessageComposite(scrolledComposite, mainComposite, messageList);
+	parent.layout(true, true);
+	recalculateScrolledCompositeSize();
     }
 
     private void createProjectDetailsComposite(Project project, Job job, SelectionListener sListener, Bid bidPlaced) {
 	tableViewer.getControl().setVisible(false);
-	((GridData) tableViewer.getControl().getLayoutData()).heightHint = 0;
 	((GridData) tableViewer.getControl().getLayoutData()).grabExcessVerticalSpace = false;
-	FaepViewHelper.createInformationBar(mainComposite, job, sListener);
-	FaepViewHelper.createDetailsComposite(mainComposite, project, sListener);
+	((GridData) tableViewer.getControl().getLayoutData()).exclude = true;
+	((GridData) searchBar.getLayoutData()).heightHint = 0;
+	searchBar.setVisible(false);
+	((GridData) searchButton.getLayoutData()).exclude = true;
+	searchButton.setVisible(false);
+	((GridData) searchOptionsCombo.getLayoutData()).exclude = true;
+	searchOptionsCombo.setVisible(false);
+	((GridData) searchLabel.getLayoutData()).exclude = true;
+	searchLabel.setVisible(false);
+	FaepViewBidHelper.createInformationBar(mainComposite, job, sListener);
+	FaepViewBidHelper.createDetailsComposite(mainComposite, project, sListener);
 	// If the job status is null then the call was made from one of the search options('Favorites','Search by Keyword','Search
 	// by Type'). If it is not null then the call was made from the "my bids" search option ('Bidded projects' or 'Active
 	// projects').
 	if (job.getStatus() == null) {
-	    FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, project.getStatus());
+	    FaepViewBidHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, project.getStatus());
 	} else {
-	    FaepViewHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, job.getStatus());
+	    FaepViewBidHelper.creaeteMyBidComposite(mainComposite, bidPlaced, sListener, job.getStatus());
 	}
     }
 
     public void createTableViewer() {
-	FaepViewHelper.disposeProjectComposites();
+	FaepViewBidHelper.disposeProjectComposites();
+	FaepViewMessageHelper.disposeMessageComposites();
 
 	if (tableViewer == null) {
 	    tableViewer = new TableViewer(mainComposite, SWT.MULTI | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -197,12 +221,25 @@ public class FaepView extends ViewPart {
 	    tableGridData.minimumWidth = 320;
 	    tableViewer.getControl().setLayoutData(tableGridData);
 	} else {
-	    ((GridData) tableViewer.getControl().getLayoutData()).heightHint = -1;
+	    ((GridData) tableViewer.getControl().getLayoutData()).exclude = false;
 	    ((GridData) tableViewer.getControl().getLayoutData()).grabExcessVerticalSpace = true;
+	    ((GridData) searchBar.getLayoutData()).heightHint = -1;
+	    ((GridData) searchButton.getLayoutData()).exclude = false;
+	    ((GridData) searchOptionsCombo.getLayoutData()).exclude = false;
+	    ((GridData) searchLabel.getLayoutData()).exclude = false;
+	    searchBar.setVisible(true);
+	    searchButton.setVisible(true);
+	    searchButton.moveBelow(searchBar);
+	    searchOptionsCombo.setVisible(true);
+	    searchOptionsCombo.moveAbove(searchBar);
+	    searchLabel.setVisible(true);
+	    searchLabel.moveAbove(searchOptionsCombo);
 	    tableViewer.getControl().setVisible(true);
-	}
+	    tableViewer.getControl().moveBelow(searchButton);
 
-	mainComposite.layout();
+	}
+	recalculateScrolledCompositeSize();
+	scrolledComposite.layout();
     }
 
     private void createColumns(Composite parent) {

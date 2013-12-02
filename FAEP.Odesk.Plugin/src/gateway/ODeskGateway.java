@@ -13,12 +13,10 @@ import common.wrappers.Job;
 import common.wrappers.JobSearch;
 import common.wrappers.Message;
 import common.wrappers.Notification;
-import common.wrappers.OutgoingMessage;
 import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
-import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public class ODeskGateway extends AbstractApiGateway {
@@ -88,14 +86,7 @@ public class ODeskGateway extends AbstractApiGateway {
     }
 
     @Override
-    public List<Message> getMessages(long projectId) throws BusinessException {
-	// TODO Auto-generated method stub
-	List<Message> messageList = new ArrayList<Message>();
-	return messageList;
-    }
-
-    @Override
-    public void sendMessage(OutgoingMessage msg) throws BusinessException {
+    public void sendMessage(Message msg) throws BusinessException {
 	// TODO Auto-generated method stub
 
     }
@@ -156,12 +147,6 @@ public class ODeskGateway extends AbstractApiGateway {
     }
 
     @Override
-    public JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
     public void acceptBidWon(long projectId) throws BusinessException {
 	// TODO Auto-generated method stub
 
@@ -171,6 +156,12 @@ public class ODeskGateway extends AbstractApiGateway {
     public void declineBidWon(long projectId) throws BusinessException {
 	// TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public List<Message> getProjectMessages(long projectId, long ownerId) throws BusinessException {
+	// TODO Auto-generated method stub
+	return null;
     }
 
 }

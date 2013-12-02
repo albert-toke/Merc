@@ -46,8 +46,8 @@ public class FaepExpandListener implements ExpandListener {
 		bidList = proxy.getBidsForProject(item.getId(), item.getProvider());
 		item.initComponentsWithBids(project, bidList, null);
 	    } else if (state.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
-		messageList = proxy.getMessages(item.getId(), item.getProvider());
-		item.initComponentsWithMessages(project, messageList, null);
+		// messageList = proxy.getMessages(item.getId(), item.getProvider());
+		// item.initComponentsWithMessages(project, messageList, null);
 	    } else if (state.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())) {
 		// TODO my bid highlighted
 		bidList = proxy.getBidsForProject(item.getId(), item.getProvider());

@@ -15,6 +15,7 @@ import proxy.Proxy;
 
 import common.wrappers.Bid;
 import common.wrappers.Job;
+import common.wrappers.Message;
 import common.wrappers.Project;
 
 import exceptions.BusinessException;
@@ -50,10 +51,36 @@ public class DoubleClickListener implements IDoubleClickListener {
 	String comboSelection = view.getSearchCombo().getText();
 
 	if (comboSelection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())) {
-	    // TODO actual projects
+	    getDetailsForActiveProject(job);
 	} else {
 	    // Valid for the remaining 4 Cases. (BY_TYPE,BY_KEYWORD,PROJECTS_BID_ON and FAVOURITES)
 	    getInfoForKeywordAndJobtypeSelection(job);
+	}
+
+    }
+
+    private void getDetailsForActiveProject(Job job) {
+	Project project;
+	Bid myBid = null;
+	List<Message> messageList;
+	try {
+	    project = proxy.getProjectDetails(job.getProjectId(), job.getProvider());
+	    messageList = proxy.getMessages(job.getProjectId(), project.getBuyerId(), job.getProvider());
+	    long userId = preferences.getLong("freelancer-userId", 0);
+	    if (userId != 0) {
+		for (Bid bid : proxy.getBidsForProject(job.getProjectId(), job.getProvider())) {
+		    if (bid.getProviderUserId() == userId) {
+			myBid = bid;
+			break;
+		    }
+		}
+	    }
+
+	    view.createProjectDetailsWithMessages(project, job, controller.getSelectionListener(), messageList, myBid);
+
+	} catch (BusinessException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 
     }
@@ -75,7 +102,6 @@ public class DoubleClickListener implements IDoubleClickListener {
 		}
 		if (myBid != null) {
 		    bidList.remove(myBid);
-		    proxy.getMyBidStatusForProject(job.getProjectId(), job.getProvider());
 		}
 	    }
 

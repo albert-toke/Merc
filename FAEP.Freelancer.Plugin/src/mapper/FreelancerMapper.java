@@ -272,6 +272,7 @@ public class FreelancerMapper {
 	    project.setJobCategory(convertJobCategories(root));
 	    project.setBidCount(root.get("bid_stats").get("count").asLong());
 	    project.setAverageBidVal(root.get("bid_stats").get("avg").asDouble());
+	    project.setProvider(PROVIDER);
 
 	    if (root.get("seller") != null && root.get("seller").get(0) != null) {
 		JsonNode seller = root.get("seller").get(0);
@@ -358,28 +359,33 @@ public class FreelancerMapper {
      * 
      * @param jsonString
      *            JSON String response.
+     * @param ownerId
      * @return A list of IncomingMessage POJOs.
      * @throws BusinessException
      */
-    public List<Message> convertIncomingMessagesToSystem(String jsonString) throws BusinessException {
+    public List<Message> convertConversationToSystem(String jsonString, long ownerId) throws BusinessException {
 	List<Message> messages = null;
 	try {
 	    JsonNode messageNode = jsonMapper.readTree(jsonString);
 	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageNode));
 	    verifyErrorMessage(messageNode);
-	    JsonNode root = messageNode.get(ROOT);
+	    JsonNode root = messageNode.get(ROOT).get("items");
 	    messages = new ArrayList<Message>();
-	    for (JsonNode node : root.path("items")) {
+	    for (JsonNode node : root.path("message")) {
 		Message msg = new Message();
 		msg.setProjectId(node.get("projectid").asLong());
 		msg.setUsername(node.get("fromusername").asText());
 		msg.setUserId(node.get("fromuserid").asLong());
 		msg.setDate(convertToDate(node.get("datetime").asText()));
 		msg.setText(node.get("text").asText());
-		msg.setDirection(DirectionEnum.INCOMING);
 		msg.setProvider("freelancer");
-		for (JsonNode subNode : node.path("attachmentlink")) {
-		    msg.addAttachment(subNode.asText());
+		if (msg.getUserId() == ownerId) {
+		    msg.setDirection(DirectionEnum.INCOMING);
+		} else {
+		    msg.setDirection(DirectionEnum.OUTGOING);
+		}
+		for (JsonNode attachementNode : node.path("attachmentlink")) {
+		    msg.addAttachment(attachementNode.asText());
 		}
 		messages.add(msg);
 	    }

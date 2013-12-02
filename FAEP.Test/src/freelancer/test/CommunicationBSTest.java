@@ -15,7 +15,6 @@ import org.junit.Test;
 import proxy.Proxy;
 
 import common.wrappers.Message;
-import common.wrappers.OutgoingMessage;
 
 public class CommunicationBSTest {
 
@@ -60,10 +59,10 @@ public class CommunicationBSTest {
     @Test
     public void sendMessageTest() {
 	assertTrue(proxy.getTokenLocally().isEmpty());
-	OutgoingMessage message = new OutgoingMessage();
-	message.setMessageText("test message");
-	message.setProjectId(MYPROJECT);
-	message.setUrsername(TOUSERNAME);
+	Message message = new Message();
+	message.setText("test message");
+	message.setProjectId(987);
+	message.setUsername(TOUSERNAME);
 	message.setProvider(PROVIDER);
 	try {
 	    proxy.sendMessage(message);

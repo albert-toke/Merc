@@ -26,7 +26,6 @@ import common.wrappers.Job;
 import common.wrappers.JobSearch;
 import common.wrappers.Message;
 import common.wrappers.Notification;
-import common.wrappers.OutgoingMessage;
 import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
@@ -229,17 +228,16 @@ public class FreelancerGateway extends AbstractApiGateway {
      * {@inheritDoc}
      */
     @Override
-    public List<Message> getMessages(long projectId) throws BusinessException {
-	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "getInboxMessages" + EXT;
+    public List<Message> getProjectMessages(long projectId, long ownerId) throws BusinessException {
+	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "loadMessageThread" + EXT;
 	OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
-	if (projectId != 0) {
-	    request.addQuerystringParameter("projectid", Long.toString(projectId));
-	}
+	request.addQuerystringParameter("projectid", Long.toString(projectId));
+	request.addQuerystringParameter("betweenuserid", Long.toString(ownerId));
 	service.signRequest(accessToken, request);
 	request.addHeader("GData-Version", "3.0");
 	Response response = request.send();
 	List<Message> messages = null;
-	messages = mapper.convertIncomingMessagesToSystem(response.getBody());
+	messages = mapper.convertConversationToSystem(response.getBody(), ownerId);
 	return messages;
     }
 
@@ -247,12 +245,12 @@ public class FreelancerGateway extends AbstractApiGateway {
      * {@inheritDoc}
      */
     @Override
-    public void sendMessage(OutgoingMessage msg) throws BusinessException {
+    public void sendMessage(Message msg) throws BusinessException {
 	String requestUrl = BASE_URL + FreelancerMethodCategoryEnum.Message + "/" + "sendMessage" + EXT;
 	OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
 	request.addQuerystringParameter("projectid", Long.toString(msg.getProjectId()));
-	request.addQuerystringParameter("messagetext", msg.getMessageText());
-	request.addQuerystringParameter("username", msg.getUrsername());
+	request.addQuerystringParameter("messagetext", msg.getText());
+	request.addQuerystringParameter("username", msg.getUsername());
 	service.signRequest(accessToken, request);
 	request.addHeader("GData-Version", "3.0");
 	Response response = request.send();
@@ -424,15 +422,6 @@ public class FreelancerGateway extends AbstractApiGateway {
 	request.addHeader("GData-Version", "3.0");
 	Response response = request.send();
 	return mapper.convertAccountDetailsToUserId(response.getBody());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException {
-	// TODO Auto-generated method stub
-	return null;
     }
 
 }

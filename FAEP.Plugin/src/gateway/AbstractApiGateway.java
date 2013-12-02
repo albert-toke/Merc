@@ -19,13 +19,11 @@ import common.wrappers.Job;
 import common.wrappers.JobSearch;
 import common.wrappers.Message;
 import common.wrappers.Notification;
-import common.wrappers.OutgoingMessage;
 import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
 import crud.DAO;
-import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public abstract class AbstractApiGateway {
@@ -64,9 +62,9 @@ public abstract class AbstractApiGateway {
 
     public abstract Project getProjectDetails(long projectId) throws BusinessException;
 
-    public abstract List<Message> getMessages(long projectId) throws BusinessException;
+    public abstract List<Message> getProjectMessages(long projectId, long ownerId) throws BusinessException;
 
-    public abstract void sendMessage(OutgoingMessage msg) throws BusinessException;
+    public abstract void sendMessage(Message msg) throws BusinessException;
 
     public abstract void placeBid(BidRequest bid) throws BusinessException;
 
@@ -89,8 +87,6 @@ public abstract class AbstractApiGateway {
     public abstract String getProvider();
 
     public abstract long getUserIdFromProvider() throws BusinessException;
-
-    public abstract JobStatusEnum getMyBidStatusForProject(long projectId) throws BusinessException;
 
     // Implemented Methods
     /**

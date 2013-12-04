@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Merc Category"
+            id="Merc">
+      </category>
+      <view
+            allowMultiple="false"
+            category="Merc"
+            class="merc.gui.views.MercView"
+            icon="icons/sample.gif"
+            id="merc.views.MercView"
+            name="Merc View">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="merc.views.MercView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.ProblemView"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="merc.gui.preferences.MercPreferencePage"
+            id="merc.gui.preferences.MercPreferencePage"
+            name="Merc Preferences">
+      </page>
+   </extension>
+   <extension
+         id="Test"
+         name="Test View"
+         point="org.eclipse.ui.views">
+      <category
+            id="Merc"
+            name="Merc Category">
+      </category>
+   </extension>
+
+</plugin>

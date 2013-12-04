@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Plugin
+Bundle-SymbolicName: Merc.Odesk.Plugin;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: merc.externaljars;bundle-version="1.0.0",
+ merc.plugin;bundle-version="1.0.0"

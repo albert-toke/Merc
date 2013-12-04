@@ -113,6 +113,12 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
     @Override
     protected Control createContents(Composite parent) {
 	TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
+	GridData layoutData = new GridData();
+	layoutData.horizontalAlignment = SWT.FILL;
+	layoutData.verticalAlignment = SWT.FILL;
+	layoutData.grabExcessHorizontalSpace = true;
+	layoutData.grabExcessVerticalSpace = true;
+	tabFolder.setLayoutData(layoutData);
 	// Tab 1 - Freelancing Provider Connection Preferences
 	TabItem providerTab = new TabItem(tabFolder, SWT.NONE);
 	providerTab.setText("Providers Preferences");
@@ -134,8 +140,8 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 
     private void createProvidersComposite(TabFolder folder) {
 	providersComposite = new Composite(folder, SWT.NONE);
-
-	providersComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+	providersComposite.setLayoutData(gridData);
 	providersComposite.setLayout(new GridLayout(2, false));
 
 	Label providerLabel = new Label(providersComposite, SWT.NONE);

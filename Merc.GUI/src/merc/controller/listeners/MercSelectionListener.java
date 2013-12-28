@@ -2,20 +2,24 @@ package merc.controller.listeners;
 
 import java.util.Date;
 
+import merc.custom.widgets.RejectProjectDialog;
 import merc.gui.enums.ActionButtonOptionsEnum;
 import merc.gui.enums.SearchOptionsEnum;
 import merc.gui.views.MercView;
 import merc.gui.views.MercViewBidHelper;
 import merc.gui.views.MercViewMessageHelper;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
 import proxy.Proxy;
+
 import common.wrappers.BidRequest;
 import common.wrappers.Message;
+
 import enums.DirectionEnum;
 import exceptions.BusinessException;
 
@@ -38,7 +42,7 @@ public class MercSelectionListener implements SelectionListener {
     public void widgetSelected(SelectionEvent e) {
 
 	if (e.getSource() == view.getSearchButton() && !view.getSearchCombo().getText().isEmpty()) {
-	    searchButtonLogic();
+	    helper.handleSearch();
 	} else if (e.getSource() == view.getSearchCombo()) {
 	    searchComboBoxLogic();
 	} else if (e.getSource() == MercViewBidHelper.getReturnButton()) {
@@ -55,7 +59,7 @@ public class MercSelectionListener implements SelectionListener {
 		withdrawBid();
 		break;
 	    case REQUEST_CANCEL:
-		// TODO cancel project - necessary data through pop-up
+		cancelProjectLogic();
 		break;
 	    default:
 		throw new RuntimeException("Unknown case for Action Button!");
@@ -67,11 +71,6 @@ public class MercSelectionListener implements SelectionListener {
 	} else if (e.getSource() == MercViewMessageHelper.getClearButton()) {
 	    clearMessage();
 	}
-    }
-
-    // The logic for the 'GO' button.
-    private void searchButtonLogic() {
-	helper.handleSearch();
     }
 
     // The logic for the search combo box.
@@ -189,13 +188,10 @@ public class MercSelectionListener implements SelectionListener {
     }
 
     private void sendMessage() {
-	Message msg = new Message();
-	msg.setText(MercViewMessageHelper.getMessageTextArea().getText());
-	msg.setProjectId(MercViewBidHelper.getProject().getId());
-	msg.setProvider(MercViewBidHelper.getProject().getProvider());
-	msg.setUsername(MercViewBidHelper.getProject().getBuyerUserName());
-	msg.setDirection(DirectionEnum.OUTGOING);
-	msg.setDate(new Date());
+	Message msg = validateMessage();
+	if (msg == null) {
+	    return;
+	}
 
 	try {
 	    proxy.sendMessage(msg);
@@ -208,8 +204,47 @@ public class MercSelectionListener implements SelectionListener {
 
     }
 
+    private Message validateMessage() {
+	Message msg = new Message();
+	boolean succesful = true;
+
+	String stringMsg = MercViewMessageHelper.getMessageTextArea().getText();
+	if (stringMsg.length() > 0) {
+	    msg.setText(stringMsg);
+	    MercViewMessageHelper.hideMessageDecorator();
+	} else {
+	    MercViewMessageHelper.showMessageDecorator();
+	    succesful = false;
+	}
+
+	if (succesful) {
+
+	    msg.setProjectId(MercViewBidHelper.getProject().getId());
+	    msg.setProvider(MercViewBidHelper.getProject().getProvider());
+	    msg.setUsername(MercViewBidHelper.getProject().getBuyerUserName());
+	    msg.setDirection(DirectionEnum.OUTGOING);
+	    msg.setDate(new Date());
+	    return msg;
+	} else {
+	    return null;
+	}
+    }
+
     private void clearMessage() {
 	MercViewMessageHelper.getMessageTextArea().setText("");
+    }
+
+    private void cancelProjectLogic() {
+	// Hard coding this here, will be moved to business model.
+	String[] reasons = { "Mutual", "Service Done Not Paid", "Service Not Done", "No Communication", "Quality of Service",
+		"Other" };
+	RejectProjectDialog dialog = new RejectProjectDialog(view.getSite().getShell(), reasons);
+	// Repair this
+	if (dialog.open() == Window.OK) {
+	    System.out.println(dialog.getSelection());
+	} else {
+	    System.out.println("Cancel Pressed");
+	}
     }
 
     @Override

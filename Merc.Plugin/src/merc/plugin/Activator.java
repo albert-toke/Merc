@@ -2,8 +2,7 @@ package merc.plugin;
 
 import gateway.AbstractApiGateway;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -22,6 +21,7 @@ public class Activator implements BundleActivator {
 
     private static BundleContext context;
     private static final String EXTENSION_POINT_ID = "merc.plugin.gateway";
+    private static final Logger LOGGER = Logger.getLogger(Activator.class.getName());
 
     static BundleContext getContext() {
 	return context;
@@ -35,40 +35,53 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
 	Activator.context = bundleContext;
 
-	List<AbstractApiGateway> gatewayList = new ArrayList<AbstractApiGateway>();
+	// Getting all the provider gateways through the extension point.
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
 	IConfigurationElement[] extensions2 = registry.getConfigurationElementsFor(EXTENSION_POINT_ID);
 
+	Proxy proxy = Proxy.getInstance();
+	Preferences preferences = ConfigurationScope.INSTANCE.getNode("merc.plugin.preferences");
+	boolean goodToGo = false;
+
 	for (int i = 0; i < extensions2.length; i++) {
 	    IConfigurationElement element = extensions2[i];
+	    AbstractApiGateway gatewayInstance = null;
 	    try {
-		AbstractApiGateway gatewayInstance = (AbstractApiGateway) element.createExecutableExtension("class");
-		gatewayInstance.initGateway("7dc7ee059324b47ef9c248183279ea0d436c8ec0",
-			"9be5f0f5f81e9de087fd437c25e9007d0e57d6a7");
-		gatewayList.add(gatewayInstance);
-		System.out.println(gatewayInstance.getProvider());
+		gatewayInstance = (AbstractApiGateway) element.createExecutableExtension("class");
+		// gatewayInstance.initGateway("7dc7ee059324b47ef9c248183279ea0d436c8ec0",
+		// "9be5f0f5f81e9de087fd437c25e9007d0e57d6a7");
+		String key = preferences.get(gatewayInstance.getProvider() + "-key", "");
+		String secret = preferences.get(gatewayInstance.getProvider() + "-secret", "");
+		String authSecret = preferences.get(gatewayInstance.getProvider() + "-tokenSecret", "");
+		String authToken = preferences.get(gatewayInstance.getProvider() + "-token", "");
+		LOGGER.info("Loaded gateway for provider:" + gatewayInstance.getProvider());
+		if (!authToken.isEmpty() && !authSecret.isEmpty() && !key.isEmpty() && !secret.isEmpty()) {
+		    gatewayInstance.initGateway(key, secret);
+		    gatewayInstance.setAccessToken(authToken, authSecret);
+
+		    proxy.addGatewayToWorkingGatewaysAndAllGateways(gatewayInstance);
+
+		    long userId = proxy.getUserIdByProvider(gatewayInstance.getProvider());
+		    preferences.putLong(gatewayInstance.getProvider() + "-userId", userId);
+		    LOGGER.info(gatewayInstance.getProvider() + "userid " + userId);
+		    goodToGo = true;
+
+		} else {
+		    // In case the specific gateway is not authorized.
+		    proxy.addGatewayToAllGateways(gatewayInstance);
+		}
+
 	    } catch (CoreException e) {
-		e.printStackTrace();
+		LOGGER.severe(e.getMessage());
+	    } catch (RuntimeException e) {
+		// In case the specific gateway is not properly configured or is unavailable.
+		if (gatewayInstance != null) {
+		    proxy.addGatewayToAllGateways(gatewayInstance);
+		}
+		LOGGER.severe("In Plugin Activator:" + e.getMessage());
 	    }
 	}
 
-	Proxy proxy = Proxy.getInstance(gatewayList);
-
-	Preferences preferences = ConfigurationScope.INSTANCE.getNode("merc.plugin.preferences");
-	List<String> providers = proxy.getProviderNames();
-	boolean goodToGo = false;
-	for (String provider : providers) {
-	    String secret = preferences.get(provider + "-tokenSecret", "");
-	    String token = preferences.get(provider + "-token", "");
-	    if (!token.isEmpty() && !secret.isEmpty()) {
-		proxy.getGatewayByProvider(provider).setAccessToken(token, secret);
-		long userId = proxy.getUserIdByProvider(provider);
-		preferences.putLong(provider + "-userId", userId);
-		System.out.println("userid" + userId);
-		goodToGo = true;
-		break;
-	    }
-	}
 	// TODO better verification in case it was revoked
 	if (goodToGo) {
 	    preferences.putBoolean("goodToGo", true);
@@ -78,7 +91,7 @@ public class Activator implements BundleActivator {
 	try {
 	    preferences.flush();
 	} catch (BackingStoreException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("In Plugin Activator:" + e.getMessage());
 	}
 
     }

@@ -1,6 +1,5 @@
 package merc.gui.preferences;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -103,11 +102,7 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
     @Override
     public void init(IWorkbench workbench) {
 	preferences = ConfigurationScope.INSTANCE.getNode("merc.plugin.preferences");
-	jobTypeList = new ArrayList<String>();
-	String jobString = preferences.get(JOB_LIST, "");
-	for (String job : jobString.split(",")) {
-	    jobTypeList.add(job);
-	}
+	jobTypeList = Proxy.getInstance().getAllProviderNames();
     }
 
     @Override
@@ -163,7 +158,7 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 		providersComposite.layout();
 	    }
 	});
-	providers = Proxy.getInstance().getProviderNames();
+	providers = Proxy.getInstance().getWorkingProviderNames();
 	providerCombo.setItems(providers.toArray(new String[providers.size()]));
 
 	Label secretLabel = new Label(providersComposite, SWT.NONE);
@@ -391,6 +386,9 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 		preferences.put(provider + "-tokenSecret", tokenSecret);
 		preferences.putLong(provider + "-userId", Proxy.getInstance().getUserIdByProvider(provider));
 		preferences.putBoolean("goodToGo", true);
+
+		// TODO init gateway so no restart is needed.
+		// Proxy.getInstance().moveGatewayFromAllToWorking(provider);
 
 		// Forces the application to save the preferences
 		preferences.flush();

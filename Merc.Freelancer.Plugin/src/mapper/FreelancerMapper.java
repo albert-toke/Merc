@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,6 +30,8 @@ import exceptions.BusinessException;
 
 public class FreelancerMapper {
 
+    private static Logger LOGGER;
+
     private static final String ROOT = "json-result";
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String PROVIDER = "freelancer";
@@ -37,6 +40,7 @@ public class FreelancerMapper {
 
     public FreelancerMapper() {
 	jsonMapper = new ObjectMapper();
+	LOGGER = Logger.getLogger(FreelancerMapper.class.getName());
     }
 
     // If the JSON mesage is an error message then throws an exception.
@@ -530,6 +534,7 @@ public class FreelancerMapper {
 
     public long convertAccountDetailsToUserId(String jsonString) throws BusinessException {
 	long userId = 0;
+	LOGGER.info(jsonString);
 	try {
 	    JsonNode root = jsonMapper.readTree(jsonString).get("json-result");
 	    userId = root.get("userid").asLong();

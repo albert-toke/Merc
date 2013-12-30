@@ -4,8 +4,10 @@ import exceptions.BusinessException;
 import gateway.AbstractApiGateway;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import common.wrappers.Bid;
@@ -21,34 +23,53 @@ import common.wrappers.ProjectPublicMessage;
 public class Proxy {
 
     private static final Logger LOGGER = Logger.getLogger(Proxy.class.getName());
-    private static List<AbstractApiGateway> gateways;
+    private static Set<AbstractApiGateway> allGateways;
+    private static Set<AbstractApiGateway> workingGateways;
     private static Proxy proxy;
 
     private Proxy() {
+	allGateways = new HashSet<AbstractApiGateway>();
+	workingGateways = new HashSet<AbstractApiGateway>();
     }
 
     public static Proxy getInstance() {
 	if (proxy == null) {
-	    throw new RuntimeException("Call the initProxy method before");
+	    proxy = new Proxy();
 	}
 	return proxy;
     }
 
-    public static Proxy getInstance(List<AbstractApiGateway> gatewayList) {
+    public static Proxy getInstance(Set<AbstractApiGateway> gatewayList) {
 	if (proxy == null) {
 	    proxy = new Proxy();
 	}
-	gateways = gatewayList;
+	allGateways = gatewayList;
 	return proxy;
     }
 
-    // public Proxy(List<AbstractApiGateway> gateways) {
-    // this.gateways = gateways;
-    // }
+    public void addGatewayToWorkingGatewaysAndAllGateways(AbstractApiGateway gateway) {
+
+	workingGateways.add(gateway);
+	allGateways.add(gateway);
+    }
+
+    public void addGatewayToAllGateways(AbstractApiGateway gateway) {
+
+	allGateways.add(gateway);
+    }
+
+    public void moveGatewayFromAllToWorking(String provider) {
+	for (AbstractApiGateway gateway : allGateways) {
+	    if (gateway.getProvider().equalsIgnoreCase(provider)) {
+		workingGateways.add(gateway);
+		break;
+	    }
+	}
+    }
 
     public List<String> getTokenLocally() {
 	List<String> providerLocallyNotFound = new ArrayList<String>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    try {
 		if (!gateway.initializeGatewayLocally())
 		    providerLocallyNotFound.add(gateway.getProvider());
@@ -85,7 +106,7 @@ public class Proxy {
 
     public List<Job> searchJobs(JobSearch jobSearchDTO) {
 	List<Job> jobsList = new ArrayList<Job>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    try {
 		List<Job> tempList = gateway.searchJobs(jobSearchDTO);
 		jobsList.addAll(tempList);
@@ -116,7 +137,7 @@ public class Proxy {
 
     public List<Notification> getNotifications() throws BusinessException {
 	List<Notification> notifications = new ArrayList<Notification>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    notifications.addAll(gateway.getNotifications());
 	}
 	return notifications;
@@ -140,7 +161,7 @@ public class Proxy {
 
     public int getUnreadMessageCount() throws BusinessException {
 	int count = 0;
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    count += gateway.getUnreadMessageCount();
 	}
 	return count;
@@ -173,7 +194,7 @@ public class Proxy {
 
     public List<Message> getSentMessages() throws BusinessException {
 	List<Message> messages = new ArrayList<Message>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    messages.addAll(gateway.getSentMessages());
 	}
 	return messages;
@@ -186,7 +207,7 @@ public class Proxy {
 
     public List<Job> getBiddedProjects() throws BusinessException {
 	List<Job> projects = new ArrayList<Job>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    projects.addAll(gateway.getBiddedProjects());
 	}
 	return projects;
@@ -194,7 +215,7 @@ public class Proxy {
 
     public List<Job> getWonBiddedProjects() throws BusinessException {
 	List<Job> projects = new ArrayList<Job>();
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : workingGateways) {
 	    projects.addAll(gateway.getWonBiddedProjects());
 	}
 	return projects;
@@ -202,7 +223,7 @@ public class Proxy {
 
     public AbstractApiGateway getGatewayByProvider(String provider) {
 	AbstractApiGateway gateway = null;
-	for (AbstractApiGateway gate : gateways) {
+	for (AbstractApiGateway gate : workingGateways) {
 	    if (gate.getProvider().equals(provider)) {
 		gateway = gate;
 	    }
@@ -210,9 +231,17 @@ public class Proxy {
 	return gateway;
     }
 
-    public List<String> getProviderNames() {
+    public List<String> getWorkingProviderNames() {
 	List<String> providers = new ArrayList<String>();
-	for (AbstractApiGateway gt : gateways) {
+	for (AbstractApiGateway gt : workingGateways) {
+	    providers.add(gt.getProvider());
+	}
+	return providers;
+    }
+
+    public List<String> getAllProviderNames() {
+	List<String> providers = new ArrayList<String>();
+	for (AbstractApiGateway gt : allGateways) {
 	    providers.add(gt.getProvider());
 	}
 	return providers;
@@ -220,7 +249,7 @@ public class Proxy {
 
     // Test method
     public void getJobList() {
-	for (AbstractApiGateway gateway : gateways) {
+	for (AbstractApiGateway gateway : allGateways) {
 	    gateway.getJobList();
 	}
     }

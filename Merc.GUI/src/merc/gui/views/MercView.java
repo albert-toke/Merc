@@ -3,6 +3,7 @@ package merc.gui.views;
 import java.util.List;
 
 import merc.gui.Activator;
+import merc.gui.constants.MercColor;
 import merc.gui.enums.SearchOptionsEnum;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -24,7 +25,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -53,8 +53,6 @@ public class MercView extends ViewPart {
     private Composite mainComposite;
     private ScrolledComposite scrolledComposite;
     private Label searchLabel;
-    private Color green = new Color(Display.getCurrent(), 173, 214, 103);
-    private Color red = new Color(Display.getCurrent(), 214, 103, 103);
 
     private String[] comboOptions = SearchOptionsEnum.getAllStringValues();
     private Combo searchOptionsCombo;
@@ -263,9 +261,9 @@ public class MercView extends ViewPart {
 		Job job = (Job) element;
 		if (job.getStatus() != null) {
 		    if (job.getStatus() == JobStatusEnum.WON) {
-			return green;
+			return MercColor.GREEN;
 		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
-			return red;
+			return MercColor.RED;
 		    }
 		}
 		return super.getBackground(element);
@@ -288,9 +286,9 @@ public class MercView extends ViewPart {
 		Job job = (Job) element;
 		if (job.getStatus() != null) {
 		    if (job.getStatus() == JobStatusEnum.WON) {
-			return green;
+			return MercColor.GREEN;
 		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
-			return red;
+			return MercColor.RED;
 		    }
 		}
 		return super.getBackground(element);
@@ -316,9 +314,9 @@ public class MercView extends ViewPart {
 		Job job = (Job) element;
 		if (job.getStatus() != null) {
 		    if (job.getStatus() == JobStatusEnum.WON) {
-			return green;
+			return MercColor.GREEN;
 		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
-			return red;
+			return MercColor.RED;
 		    }
 		}
 		return super.getBackground(element);
@@ -341,9 +339,9 @@ public class MercView extends ViewPart {
 		Job job = (Job) element;
 		if (job.getStatus() != null) {
 		    if (job.getStatus() == JobStatusEnum.WON) {
-			return green;
+			return MercColor.GREEN;
 		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
-			return red;
+			return MercColor.RED;
 		    }
 		}
 		return super.getBackground(element);
@@ -367,9 +365,9 @@ public class MercView extends ViewPart {
 		Job job = (Job) element;
 		if (job.getStatus() != null) {
 		    if (job.getStatus() == JobStatusEnum.WON) {
-			return green;
+			return MercColor.GREEN;
 		    } else if (job.getStatus() == JobStatusEnum.CLOSED) {
-			return red;
+			return MercColor.RED;
 		    }
 		}
 		return super.getBackground(element);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import merc.gui.Activator;
+import merc.gui.constants.MercColor;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -21,7 +22,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -247,7 +247,7 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 	hintArea = new Label(providersComposite, SWT.WRAP);
 	GridData hintData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 	hintArea.setLayoutData(hintData);
-	hintArea.setForeground(new Color(providersComposite.getDisplay(), 0, 0, 0));
+	hintArea.setForeground(MercColor.BLACK);
 
 	createBrowser();
 

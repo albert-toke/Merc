@@ -2,6 +2,7 @@ package merc.gui.views;
 
 import java.util.List;
 
+import merc.gui.constants.MercColor;
 import merc.gui.enums.ActionButtonOptionsEnum;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -9,7 +10,6 @@ import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -166,7 +166,7 @@ public class MercViewBidHelper {
 	bidAmountText = new Text(bidPlaceComposite, SWT.NONE);
 	bidAmountText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-	bidAmountText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+	bidAmountText.setBackground(MercColor.WHITE);
 	bidAmountDecorator = addTextDecorator(bidAmountText);
 
 	Label bidDurationLabel = new Label(bidPlaceComposite, SWT.NONE);
@@ -176,7 +176,7 @@ public class MercViewBidHelper {
 	bidReqTimeText = new Text(bidPlaceComposite, SWT.NONE);
 	bidReqTimeText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-	bidReqTimeText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+	bidReqTimeText.setBackground(MercColor.WHITE);
 	bidReqTimeDecorator = addTextDecorator(bidReqTimeText);
 
 	Label bidDescriptionLabel = new Label(bidPlaceComposite, SWT.NONE);
@@ -188,7 +188,7 @@ public class MercViewBidHelper {
 	descriptionGridData.heightHint = 75;
 	bidDescriptionText.setLayoutData(descriptionGridData);
 
-	bidDescriptionText.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+	bidDescriptionText.setBackground(MercColor.WHITE);
 	bidDescriptionDecorator = addTextDecorator(bidDescriptionText);
 
 	bidButton = new Button(bidPlaceComposite, SWT.PUSH);
@@ -268,42 +268,42 @@ public class MercViewBidHelper {
     public static void showBidAmountDecorator() {
 	if (bidAmountDecorator != null) {
 	    bidAmountDecorator.show();
-	    bidAmountText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	    bidAmountText.setBackground(MercColor.TEXT_ERROR);
 	}
     }
 
     public static void showBidReqTimeDecorator() {
 	if (bidReqTimeDecorator != null) {
 	    bidReqTimeDecorator.show();
-	    bidReqTimeText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	    bidReqTimeText.setBackground(MercColor.TEXT_ERROR);
 	}
     }
 
     public static void showBidDescriptionDecorator() {
 	if (bidDescriptionDecorator != null) {
 	    bidDescriptionDecorator.show();
-	    bidDescriptionText.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	    bidDescriptionText.setBackground(MercColor.TEXT_ERROR);
 	}
     }
 
     public static void hideBidAmountDecorator() {
 	if (bidAmountDecorator != null) {
 	    bidAmountDecorator.hide();
-	    bidAmountText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	    bidAmountText.setBackground((MercColor.WHITE));
 	}
     }
 
     public static void hideBidReqTimeDecorator() {
 	if (bidReqTimeDecorator != null) {
 	    bidReqTimeDecorator.hide();
-	    bidReqTimeText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	    bidReqTimeText.setBackground((MercColor.WHITE));
 	}
     }
 
     public static void hideBidDescriptionDecorator() {
 	if (bidDescriptionDecorator != null) {
 	    bidDescriptionDecorator.hide();
-	    bidDescriptionText.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	    bidDescriptionText.setBackground((MercColor.WHITE));
 	}
     }
 

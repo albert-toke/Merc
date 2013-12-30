@@ -6,8 +6,7 @@ public enum ActionButtonOptionsEnum {
     DECLINE("Decline Project"), //
     WITHDRAW("Withdraw Bid"), //
     POST_MESSAGE("Post Message"), //
-    PLACE_BID("Place Bid"), //
-    REQUEST_CANCEL("Request Cancel Project");
+    PLACE_BID("Place Bid");
 
     private String type;
 

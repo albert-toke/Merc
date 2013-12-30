@@ -2,13 +2,14 @@ package merc.gui.views;
 
 import java.util.List;
 
+import merc.gui.constants.MercColor;
+
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -16,7 +17,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -34,10 +34,6 @@ public class MercViewMessageHelper {
     private static List<Message> messageList;
     private static ScrolledComposite scrolledComposite;
     private static ControlDecoration messageDecorator;
-    private static Color blue = new Color(Display.getCurrent(), 144, 207, 255);
-    private static Color lightBlue = new Color(Display.getCurrent(), 176, 221, 255);
-    private static Color lightOrange = new Color(Display.getCurrent(), 255, 221, 176);
-    private static Color orange = new Color(Display.getCurrent(), 255, 197, 121);
 
     public static void createNewMessageComposite(Composite mainComposite, SelectionListener sListener) {
 	newMessageComposite = new Composite(mainComposite, SWT.BORDER);
@@ -110,17 +106,17 @@ public class MercViewMessageHelper {
 	    sb.append(message.getUsername());
 
 	    userNameText.setText(sb.toString());
-	    comp.setBackground(blue);
-	    userNameText.setBackground(blue);
-	    dateText.setBackground(blue);
-	    messageTextArea.setBackground(lightBlue);
+	    comp.setBackground(MercColor.BLUE);
+	    userNameText.setBackground(MercColor.BLUE);
+	    dateText.setBackground(MercColor.BLUE);
+	    messageTextArea.setBackground(MercColor.LIGHTBLUE);
 	} else {
 	    sb.append("Me");
 	    userNameText.setText(sb.toString());
-	    messageTextArea.setBackground(lightOrange);
-	    comp.setBackground(orange);
-	    userNameText.setBackground(orange);
-	    dateText.setBackground(orange);
+	    messageTextArea.setBackground(MercColor.LIGHTORANGE);
+	    comp.setBackground(MercColor.ORANGE);
+	    userNameText.setBackground(MercColor.ORANGE);
+	    dateText.setBackground(MercColor.ORANGE);
 	}
     }
 
@@ -173,14 +169,14 @@ public class MercViewMessageHelper {
     public static void showMessageDecorator() {
 	if (messageDecorator != null) {
 	    messageDecorator.show();
-	    messageTextArea.setBackground((new Color(Display.getCurrent(), 255, 200, 200)));
+	    messageTextArea.setBackground(MercColor.TEXT_ERROR);
 	}
     }
 
     public static void hideMessageDecorator() {
 	if (messageDecorator != null) {
 	    messageDecorator.hide();
-	    messageTextArea.setBackground((new Color(Display.getCurrent(), 255, 255, 255)));
+	    messageTextArea.setBackground(MercColor.TEXT_ERROR);
 	}
     }
 }

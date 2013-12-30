@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import common.wrappers.Bid;
 import common.wrappers.Job;
 import common.wrappers.Project;
+
 import enums.JobStatusEnum;
 
 public class MercViewBidHelper {
@@ -205,6 +206,7 @@ public class MercViewBidHelper {
 	    if (jobStatus == JobStatusEnum.OPEN) {
 		setFieldsEditableState(false);
 		bidButtonText = ActionButtonOptionsEnum.WITHDRAW.getStringValue();
+		bidButton.setVisible(true);
 	    } else if (jobStatus == JobStatusEnum.WON) {
 		setFieldsEditableState(false);
 		declineButton = new Button(bidPlaceComposite, SWT.PUSH);
@@ -213,9 +215,9 @@ public class MercViewBidHelper {
 		declineButton.setText(ActionButtonOptionsEnum.DECLINE.getStringValue());
 		declineButton.addSelectionListener(sListener);
 		bidButtonText = ActionButtonOptionsEnum.ACCEPT.getStringValue();
+		bidButton.setVisible(true);
 	    } else if (jobStatus == JobStatusEnum.ACTIVE) {
-		bidButtonText = ActionButtonOptionsEnum.REQUEST_CANCEL.getStringValue();
-		setFieldsEditableState(false);
+		bidButton.setVisible(false);
 	    } else if (jobStatus == JobStatusEnum.CLOSED) {
 		bidButton.setVisible(false);
 		setFieldsEditableState(false);

@@ -2,14 +2,12 @@ package merc.controller.listeners;
 
 import java.util.Date;
 
-import merc.custom.widgets.RejectProjectDialog;
 import merc.gui.enums.ActionButtonOptionsEnum;
 import merc.gui.enums.SearchOptionsEnum;
 import merc.gui.views.MercView;
 import merc.gui.views.MercViewBidHelper;
 import merc.gui.views.MercViewMessageHelper;
 
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -57,9 +55,6 @@ public class MercSelectionListener implements SelectionListener {
 		break;
 	    case WITHDRAW:
 		withdrawBid();
-		break;
-	    case REQUEST_CANCEL:
-		cancelProjectLogic();
 		break;
 	    default:
 		throw new RuntimeException("Unknown case for Action Button!");
@@ -232,19 +227,6 @@ public class MercSelectionListener implements SelectionListener {
 
     private void clearMessage() {
 	MercViewMessageHelper.getMessageTextArea().setText("");
-    }
-
-    private void cancelProjectLogic() {
-	// Hard coding this here, will be moved to business model.
-	String[] reasons = { "Mutual", "Service Done Not Paid", "Service Not Done", "No Communication", "Quality of Service",
-		"Other" };
-	RejectProjectDialog dialog = new RejectProjectDialog(view.getSite().getShell(), reasons);
-	// Repair this
-	if (dialog.open() == Window.OK) {
-	    System.out.println(dialog.getSelection());
-	} else {
-	    System.out.println("Cancel Pressed");
-	}
     }
 
     @Override

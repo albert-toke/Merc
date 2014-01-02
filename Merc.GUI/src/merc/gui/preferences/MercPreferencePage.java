@@ -78,6 +78,8 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
     private static final String JOB_LIST = "jobList";
     private List<String> providers;
 
+    // TODO Separate Prefernce Page from Control and split up in helper classes.
+
     public MercPreferencePage() {
 	super();
 	// Set the preference store for the preference page.

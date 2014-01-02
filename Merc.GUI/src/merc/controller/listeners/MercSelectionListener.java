@@ -1,6 +1,7 @@
 package merc.controller.listeners;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import merc.gui.enums.ActionButtonOptionsEnum;
 import merc.gui.enums.SearchOptionsEnum;
@@ -22,6 +23,8 @@ import enums.DirectionEnum;
 import exceptions.BusinessException;
 
 public class MercSelectionListener implements SelectionListener {
+
+    private static final Logger LOGGER = Logger.getLogger(MercSelectionListener.class.getName());
 
     private MercView view;
     private SearchListenerHelper helper;
@@ -100,7 +103,7 @@ public class MercSelectionListener implements SelectionListener {
 	    MercViewBidHelper.setFieldsEditableState(false);
 	    MercViewBidHelper.getBidButton().setText(ActionButtonOptionsEnum.WITHDRAW.getStringValue());
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in MercSelectionListener.placeBidLogic:" + e.getMessage());
 	    view.createErrorDialog("Bid place error", "Your bid could not be placed!");
 	    return false;
 	}
@@ -152,7 +155,7 @@ public class MercSelectionListener implements SelectionListener {
 	    // TODO Redraw details pane to active project
 	    // TODO getMessages
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in MercSelectionListener.acceptBidWon:" + e.getMessage());
 	    view.createErrorDialog("Project Accept Error", "You could not accept the bid project!");
 	}
     }
@@ -163,7 +166,7 @@ public class MercSelectionListener implements SelectionListener {
 	    view.createInfoDialog("Project Declined", "You have decline the won project!");
 	    // TODO return to main window
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in MercSelectionListener.declineBidWon:" + e.getMessage());
 	    view.createErrorDialog("Project Decline Error", "You could not decline the bid project!");
 	}
     }
@@ -177,7 +180,7 @@ public class MercSelectionListener implements SelectionListener {
 	    MercViewBidHelper.getBidAmountText().setText(EMPTY);
 	    MercViewBidHelper.getBidReqTimeText().setText(EMPTY);
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in MercSelectionListener.withdrawBid:" + e.getMessage());
 	    view.createInfoDialog("Bid withdrawal Error", "You could not withdraw your bid from the project!");
 	}
     }
@@ -193,7 +196,7 @@ public class MercSelectionListener implements SelectionListener {
 	    MercViewMessageHelper.addNewOutgoingMessageToComposite(msg);
 	    clearMessage();
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in MercSelectionListener.sendMessage:" + e.getMessage());
 	    view.createInfoDialog("Message Sending Error", "There occurred an Error while trying to send the message!");
 	}
 
@@ -221,6 +224,7 @@ public class MercSelectionListener implements SelectionListener {
 	    msg.setDate(new Date());
 	    return msg;
 	} else {
+	    // TODO should not return null.
 	    return null;
 	}
     }

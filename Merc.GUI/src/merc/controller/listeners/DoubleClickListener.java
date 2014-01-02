@@ -2,6 +2,7 @@ package merc.controller.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import merc.controller.MercController;
 import merc.gui.enums.SearchOptionsEnum;
@@ -25,6 +26,8 @@ import common.wrappers.Project;
 import exceptions.BusinessException;
 
 public class DoubleClickListener implements IDoubleClickListener {
+
+    private static final Logger LOGGER = Logger.getLogger(DoubleClickListener.class.getName());
 
     private MercView view;
     private Proxy proxy;
@@ -80,8 +83,7 @@ public class DoubleClickListener implements IDoubleClickListener {
 	    view.createProjectDetailsWithMessages(project, job, controller.getSelectionListener(), messageList, myBid);
 
 	} catch (BusinessException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in DoubleClickListener.getDetailsForActiveProject:" + e.getMessage());
 	}
 
     }
@@ -109,8 +111,7 @@ public class DoubleClickListener implements IDoubleClickListener {
 	    view.createProjectDetailsWithBids(project, job, controller.getSelectionListener(), bidList, myBid);
 
 	} catch (BusinessException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in DoubleClickListener.getInfoForKeywordAndJobtypeSelection:" + e.getMessage());
 	}
     }
 }

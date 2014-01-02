@@ -1,7 +1,5 @@
 package merc.controller;
 
-import java.util.List;
-
 import merc.controller.listeners.DoubleClickListener;
 import merc.controller.listeners.MercPreferenceListener;
 import merc.controller.listeners.MercSelectionListener;
@@ -16,12 +14,6 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 
-import proxy.Proxy;
-
-import common.wrappers.Job;
-
-import exceptions.BusinessException;
-
 public class MercController {
 
     private static MercController controller;
@@ -32,11 +24,7 @@ public class MercController {
     private SearchHistoryContentProposal contentProposal;
     private SearchBarKeyListener keyListener;
 
-    private Proxy proxy;
-    private List<Job> projectsBidOn;
-
     private MercController() {
-	this.proxy = Proxy.getInstance();
     }
 
     /**
@@ -95,6 +83,11 @@ public class MercController {
 	preferences.addPreferenceChangeListener(listener);
     }
 
+    /**
+     * Returns the Selection Listener.
+     * 
+     * @return MercSelectionListener.
+     */
     public MercSelectionListener getSelectionListener() {
 	if (searchListener == null) {
 	    searchListener = new MercSelectionListener();
@@ -102,6 +95,11 @@ public class MercController {
 	return searchListener;
     }
 
+    /**
+     * Returns the Double Click Listener.
+     * 
+     * @return DoubleClickListener.
+     */
     public DoubleClickListener getDoubleClickListener() {
 	if (doubleListener == null) {
 	    doubleListener = new DoubleClickListener();
@@ -109,41 +107,4 @@ public class MercController {
 	return doubleListener;
     }
 
-    // TODO maybe move this part into Proxy???
-    public List<Job> getProjectsBidOn() {
-	if (projectsBidOn == null) {
-	    try {
-		projectsBidOn = proxy.getBiddedProjects();
-	    } catch (BusinessException e) {
-		e.printStackTrace();
-	    }
-	}
-	return projectsBidOn;
-    }
-
-    public void refreshProjectsBidOnList() {
-	try {
-	    projectsBidOn = proxy.getBiddedProjects();
-	} catch (BusinessException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    public boolean verifyProjectAlreadyBidOn(Job job) {
-	if (projectsBidOn == null) {
-	    try {
-		projectsBidOn = proxy.getBiddedProjects();
-	    } catch (BusinessException e) {
-		e.printStackTrace();
-	    }
-	}
-	if (job != null) {
-	    for (Job j : projectsBidOn) {
-		if (j.getProjectId() == job.getProjectId()) {
-		    return true;
-		}
-	    }
-	}
-	return false;
-    }
 }

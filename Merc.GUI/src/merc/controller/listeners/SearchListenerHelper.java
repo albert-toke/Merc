@@ -1,6 +1,7 @@
 package merc.controller.listeners;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import merc.gui.enums.SearchOptionsEnum;
 import merc.gui.views.MercView;
@@ -19,6 +20,8 @@ import common.wrappers.JobSearch;
 import exceptions.BusinessException;
 
 public class SearchListenerHelper {
+
+    private static final Logger LOGGER = Logger.getLogger(SearchListenerHelper.class.getName());
 
     private static SearchListenerHelper helper;
     private List<Job> jobList;
@@ -40,6 +43,9 @@ public class SearchListenerHelper {
 	return helper;
     }
 
+    /**
+     * Handles the search operations according to the selection in the search combo box.
+     */
     public void handleSearch() {
 	JobSearch searchParams = new JobSearch();
 	searchParams.setCount(75);
@@ -56,8 +62,7 @@ public class SearchListenerHelper {
 	    try {
 		HistoryBS.getInstance().addNewSearchEntry(searchWord);
 	    } catch (BusinessException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		LOGGER.severe("Exception thrown in SearchListenerHelper.handleSearch:" + e.getMessage());
 	    }
 	} else if (searchType.equals(SearchOptionsEnum.BY_KEYWORD.getStringValue())) {
 	    searchParams.setSearchKeyword(searchWord);
@@ -80,7 +85,7 @@ public class SearchListenerHelper {
 	    jobList = proxy.getBiddedProjects();
 	    view.getTableViewer().setInput(jobList);
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in SearchListenerHelper.addBiddedProjectsToView:" + e.getMessage());
 	}
     }
 
@@ -89,7 +94,7 @@ public class SearchListenerHelper {
 	    jobList = proxy.getWonBiddedProjects();
 	    view.getTableViewer().setInput(jobList);
 	} catch (BusinessException e) {
-	    e.printStackTrace();
+	    LOGGER.severe("Exception thrown in SearchListenerHelper.addActiveProjects:" + e.getMessage());
 	}
     }
 }

@@ -21,7 +21,6 @@ public class JobTypeInputValidator implements IInputValidator {
 		return ERROR_MESSAGE;
 	    }
 	}
-
 	// Input must be OK
 	return null;
     }

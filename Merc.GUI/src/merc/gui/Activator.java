@@ -35,34 +35,7 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
 	super.start(context);
 	plugin = this;
-	// Preferences preferences = ConfigurationScope.INSTANCE.getNode("merc.plugin.preferences");
-	// Proxy proxy = Proxy.getInstance();
-	// List<String> providers = proxy.getProviderNames();
-	// boolean goodToGo = false;
-	// for (String provider : providers) {
-	// String secret = preferences.get(provider + "-tokenSecret", "");
-	// String token = preferences.get(provider + "-token", "");
-	// if (!token.isEmpty() && !secret.isEmpty()) {
-	// proxy.getGatewayByProvider(provider).setAccessToken(token, secret);
-	// long userId = proxy.getUserIdByProvider(provider);
-	// preferences.putLong(provider + "-userId", userId);
-	// System.out.println("userid" + userId);
-	// goodToGo = true;
-	// break;
-	// }
-	// }
-	// // TODO better verification in case it was revoked
-	// if (goodToGo) {
-	// preferences.putBoolean("goodToGo", true);
-	// } else {
-	// preferences.putBoolean("goodToGo", false);
-	// }
-	// preferences.putBoolean("goodToGo", false);
-	// try {
-	// preferences.flush();
-	// } catch (BackingStoreException e) {
-	// e.printStackTrace();
-	// }
+
 	mercController = MercController.getInstance();
 	mercController.addPreferenceChangeListener();
     }

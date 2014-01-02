@@ -163,6 +163,7 @@ public class MercView extends ViewPart {
     }
 
     /**
+     * Creates the Detail Composite alongside the Messages that are send to and from the employer.
      * 
      * @param project
      * @param job
@@ -203,6 +204,9 @@ public class MercView extends ViewPart {
 	}
     }
 
+    /**
+     * Creates the Table Viewer which contains the job entries.
+     */
     public void createTableViewer() {
 	MercViewBidHelper.disposeProjectComposites();
 	MercViewMessageHelper.disposeMessageComposites();
@@ -386,10 +390,26 @@ public class MercView extends ViewPart {
 	return viewerColumn;
     }
 
+    /**
+     * Creates and shows an Info Dialog.
+     * 
+     * @param title
+     *            The title of the Info Dialog.
+     * @param message
+     *            The message that will be shown in the Info Dialog.
+     */
     public void createInfoDialog(String title, String message) {
 	MessageDialog.openInformation(getSite().getShell(), title, message);
     }
 
+    /**
+     * Creates and shows an Error Dialog.
+     * 
+     * @param title
+     *            The title of the Error Dialog.
+     * @param message
+     *            The message of the Error Dialog.
+     */
     public void createErrorDialog(String title, String message) {
 	MessageDialog.openError(getSite().getShell(), title, message);
     }

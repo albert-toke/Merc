@@ -1,6 +1,7 @@
 package merc.controller.listeners;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import merc.gui.enums.ActionButtonOptionsEnum;
@@ -10,6 +11,8 @@ import merc.gui.views.MercViewBidHelper;
 import merc.gui.views.MercViewDetailsHelper;
 import merc.gui.views.MercViewMessageHelper;
 
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -17,10 +20,14 @@ import org.eclipse.ui.PlatformUI;
 
 import proxy.Proxy;
 
+import common.wrappers.Bid;
 import common.wrappers.BidRequest;
+import common.wrappers.Job;
 import common.wrappers.Message;
+import common.wrappers.Project;
 
 import enums.DirectionEnum;
+import enums.JobStatusEnum;
 import exceptions.BusinessException;
 
 public class MercSelectionListener implements SelectionListener {
@@ -30,6 +37,7 @@ public class MercSelectionListener implements SelectionListener {
     private MercView view;
     private SearchListenerHelper helper;
     private Proxy proxy;
+    private IEclipsePreferences preferences;
 
     private static final String EMPTY = "";
 
@@ -38,6 +46,7 @@ public class MercSelectionListener implements SelectionListener {
 	view = (MercView) page.findView(MercView.ID);
 	helper = SearchListenerHelper.getInstance();
 	proxy = Proxy.getInstance();
+	preferences = ConfigurationScope.INSTANCE.getNode("merc.plugin.preferences");
     }
 
     @Override
@@ -81,6 +90,7 @@ public class MercSelectionListener implements SelectionListener {
 	    if (view.getSearchBar().getText().isEmpty()) {
 		view.getSearchButton().setEnabled(false);
 	    }
+	    view.getTableViewer().getTable().clearAll();
 	    view.getTableViewer().getTable().forceFocus();
 	} else if (selection.equals(SearchOptionsEnum.PROJECTS_BID_ON.getStringValue())
 		|| selection.equals(SearchOptionsEnum.PROJECTS_WORKING_ON.getStringValue())
@@ -153,13 +163,28 @@ public class MercSelectionListener implements SelectionListener {
 	try {
 	    proxy.acceptBidWon(MercViewDetailsHelper.getProject().getId(), MercViewDetailsHelper.getProject().getProvider());
 	    view.createInfoDialog("Project Accepted", "You have accepted the won project!");
-	    // TODO Redraw details pane to active project
+	    MercViewDetailsHelper.disposeProjectComposites();
 	    MercViewBidHelper.disposeProjectComposites();
-	    // TODO Redraw view with messages.
+	    Project project = MercViewDetailsHelper.getProject();
+	    Job job = MercViewDetailsHelper.getJob();
+	    job.setStatus(JobStatusEnum.ACTIVE);
+	    List<Message> messages = proxy.getMessages(project.getId(), project.getBuyerId(), project.getProvider());
+	    long userId = preferences.getLong("freelancer-userId", 0);
+	    Bid myBid = null;
+	    if (userId != 0) {
+		for (Bid bid : proxy.getBidsForProject(project.getId(), project.getProvider())) {
+		    if (bid.getProviderUserId() == userId) {
+			myBid = bid;
+			break;
+		    }
+		}
+	    }
+	    view.createProjectDetailsWithMessages(project, job, this, messages, myBid);
 	} catch (BusinessException e) {
 	    LOGGER.severe("Exception thrown in MercSelectionListener.acceptBidWon:" + e.getMessage());
 	    view.createErrorDialog("Project Accept Error", "You could not accept the bid project!");
 	}
+
     }
 
     private void declineBidWon() {
@@ -183,6 +208,7 @@ public class MercSelectionListener implements SelectionListener {
 	    MercViewBidHelper.getBidDescriptionText().setText(EMPTY);
 	    MercViewBidHelper.getBidAmountText().setText(EMPTY);
 	    MercViewBidHelper.getBidReqTimeText().setText(EMPTY);
+	    MercViewBidHelper.setFieldsEditableState(true);
 	} catch (BusinessException e) {
 	    LOGGER.severe("Exception thrown in MercSelectionListener.withdrawBid:" + e.getMessage());
 	    view.createInfoDialog("Bid withdrawal Error", "You could not withdraw your bid from the project!");

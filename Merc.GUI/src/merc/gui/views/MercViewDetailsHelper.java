@@ -24,8 +24,11 @@ public class MercViewDetailsHelper {
     private static Composite infoComposite;
     private static Composite detailsComposite;
     private static Project project;
+    private static Job job;
 
     public static Composite createInformationBar(Composite parent, Job job, SelectionListener listener) {
+	MercViewDetailsHelper.job = job;
+
 	infoComposite = new Composite(parent, SWT.NONE);
 	GridData compGridData = new GridData(SWT.FILL, SWT.TOP, true, false, 4, 1);
 	compGridData.widthHint = 320;
@@ -135,5 +138,9 @@ public class MercViewDetailsHelper {
 
     public static Project getProject() {
 	return project;
+    }
+
+    public static Job getJob() {
+	return job;
     }
 }

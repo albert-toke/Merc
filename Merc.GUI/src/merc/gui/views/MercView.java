@@ -208,6 +208,7 @@ public class MercView extends ViewPart {
      * Creates the Table Viewer which contains the job entries.
      */
     public void createTableViewer() {
+	MercViewDetailsHelper.disposeProjectComposites();
 	MercViewBidHelper.disposeProjectComposites();
 	MercViewMessageHelper.disposeMessageComposites();
 

@@ -103,9 +103,11 @@ public class MercViewBidHelper {
 	bidDescriptionDecorator = addTextDecorator(bidDescriptionText);
 
 	bidButton = new Button(bidPlaceComposite, SWT.PUSH);
-	bidButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+	GridData buttonGD = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+	buttonGD.widthHint = 100;
+	bidButton.setLayoutData(buttonGD);
 	// TODO width with grid data
-	bidButton.setSize(130, SWT.DEFAULT);
+	// bidButton.setSize(130, SWT.DEFAULT);
 
 	bidButton.addSelectionListener(sListener);
 

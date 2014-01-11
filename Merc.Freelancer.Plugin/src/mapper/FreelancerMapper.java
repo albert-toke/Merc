@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.wrappers.Attachement;
@@ -74,7 +72,7 @@ public class FreelancerMapper {
      * @throws BusinessException
      */
     public List<Job> convertProjectSearchResponseToSystem(String jsonString) throws BusinessException {
-	System.out.println(jsonString);
+	LOGGER.info("FreelancerMapper.convertProjectSearchResponseToSystem:" + jsonString);
 	JsonNode messageNode;
 	List<Job> jobResponeList;
 	try {
@@ -203,11 +201,9 @@ public class FreelancerMapper {
 	JsonNode node = null;
 	try {
 	    node = jsonMapper.readTree(jsonString);
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
-	} catch (JsonGenerationException e) {
-	    throw new BusinessException(e);
-	} catch (JsonMappingException e) {
-	    throw new BusinessException(e);
+	    LOGGER.info("FreelancerMapper.convertConfirmation:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+	    // System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
 	} catch (IOException e) {
 	    throw new BusinessException(e);
 	}
@@ -227,7 +223,8 @@ public class FreelancerMapper {
 	JsonNode messageNode;
 	try {
 	    messageNode = jsonMapper.readTree(jsonString);
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageNode));
+	    LOGGER.info("FreelancerMapper.convertNotificationsToSystem:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageNode));
 	    messageNode = messageNode.get(ROOT);
 	    notifications = new ArrayList<Notification>();
 	    for (JsonNode node : messageNode.path("itmes")) {
@@ -258,7 +255,8 @@ public class FreelancerMapper {
 	Project project = new Project();
 	try {
 	    JsonNode root = jsonMapper.readTree(jsonString).get(ROOT);
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+	    LOGGER.info("FreelancerMapper.convertProjectDetailsJsonToSystem:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
 	    project.setId(root.get("id").asLong());
 	    project.setName(root.get("name").asText());
 	    project.setUrl(root.get("url").asText());
@@ -330,7 +328,7 @@ public class FreelancerMapper {
 	case "P":
 	    fullState = JobStatusEnum.PENDING;
 	    break;
-	// There are two remaining states but those cant be reached in the application
+	// There are two remaining states but those can't be reached in the application
 	default:
 	    fullState = null;
 	}
@@ -371,7 +369,8 @@ public class FreelancerMapper {
 	List<Message> messages = null;
 	try {
 	    JsonNode messageNode = jsonMapper.readTree(jsonString);
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageNode));
+	    LOGGER.info("FreelancerMapper.convertConversationToSystem:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageNode));
 	    verifyErrorMessage(messageNode);
 	    JsonNode root = messageNode.get(ROOT).get("items");
 	    messages = new ArrayList<Message>();
@@ -436,7 +435,8 @@ public class FreelancerMapper {
 	List<Message> messages = new ArrayList<Message>();
 	try {
 	    JsonNode root = jsonMapper.readTree(jsonString).get("json-result").get("items");
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+	    LOGGER.info("FreelancerMapper.convertSentMessagesToSystem:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
 	    for (JsonNode node : root.path("message")) {
 		Message msg = new Message();
 		msg.setProvider(PROVIDER);
@@ -472,14 +472,11 @@ public class FreelancerMapper {
 	List<Job> projects = null;
 	try {
 	    JsonNode root = jsonMapper.readTree(jsonString).get("json-result");
-	    System.out.println(jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
+	    LOGGER.info("FreelancerMapper.convertBiddedProjectsToSystem:"
+		    + jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root));
 	    projects = new ArrayList<Job>();
 	    for (JsonNode node : root.path("items")) {
 		Job job = new Job();
-		// project.setAdditionalStatus(node.get("additionalstatus").asText());
-		// project.setEndDate(convertToDate(node.get("enddate").asText()));
-		// project.setOwnerUserId(node.get("owneruserid").asLong());
-		// project.setOwnerUserName(node.get("ownerusername").asText());
 		job.setProjectId(node.get("projectid").asLong());
 		job.setProjectName(node.get("projectname").asText());
 		job.setProjectURL(node.get("projecturl").asText());
@@ -532,6 +529,14 @@ public class FreelancerMapper {
 	return jobStatus;
     }
 
+    /**
+     * Extracts the User ID from the account details in the response jsonString.
+     * 
+     * @param jsonString
+     *            The response for the getAccountDetails operation call.
+     * @return The User ID from the response.
+     * @throws BusinessException
+     */
     public long convertAccountDetailsToUserId(String jsonString) throws BusinessException {
 	long userId = 0;
 	LOGGER.info(jsonString);

@@ -7,6 +7,7 @@ import merc.gui.enums.ActionButtonOptionsEnum;
 import merc.gui.enums.SearchOptionsEnum;
 import merc.gui.views.MercView;
 import merc.gui.views.MercViewBidHelper;
+import merc.gui.views.MercViewDetailsHelper;
 import merc.gui.views.MercViewMessageHelper;
 
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,7 +47,7 @@ public class MercSelectionListener implements SelectionListener {
 	    helper.handleSearch();
 	} else if (e.getSource() == view.getSearchCombo()) {
 	    searchComboBoxLogic();
-	} else if (e.getSource() == MercViewBidHelper.getReturnButton()) {
+	} else if (e.getSource() == MercViewDetailsHelper.getReturnButton()) {
 	    view.createTableViewer();
 	} else if (e.getSource() == MercViewBidHelper.getBidButton()) {
 	    switch (ActionButtonOptionsEnum.getEnumByValue(MercViewBidHelper.getBidButton().getText())) {
@@ -140,8 +141,8 @@ public class MercSelectionListener implements SelectionListener {
 	}
 
 	if (succesful) {
-	    bidRequest.setProjectId(MercViewBidHelper.getProject().getId());
-	    bidRequest.setProvider(MercViewBidHelper.getProject().getProvider());
+	    bidRequest.setProjectId(MercViewDetailsHelper.getProject().getId());
+	    bidRequest.setProvider(MercViewDetailsHelper.getProject().getProvider());
 	    return bidRequest;
 	} else {
 	    return null;
@@ -150,10 +151,11 @@ public class MercSelectionListener implements SelectionListener {
 
     private void acceptBidWon() {
 	try {
-	    proxy.acceptBidWon(MercViewBidHelper.getProject().getId(), MercViewBidHelper.getProject().getProvider());
+	    proxy.acceptBidWon(MercViewDetailsHelper.getProject().getId(), MercViewDetailsHelper.getProject().getProvider());
 	    view.createInfoDialog("Project Accepted", "You have accepted the won project!");
 	    // TODO Redraw details pane to active project
-	    // TODO getMessages
+	    MercViewBidHelper.disposeProjectComposites();
+	    // TODO Redraw view with messages.
 	} catch (BusinessException e) {
 	    LOGGER.severe("Exception thrown in MercSelectionListener.acceptBidWon:" + e.getMessage());
 	    view.createErrorDialog("Project Accept Error", "You could not accept the bid project!");
@@ -162,9 +164,10 @@ public class MercSelectionListener implements SelectionListener {
 
     private void declineBidWon() {
 	try {
-	    proxy.declineBidWon(MercViewBidHelper.getProject().getId(), MercViewBidHelper.getProject().getProvider());
+	    proxy.declineBidWon(MercViewDetailsHelper.getProject().getId(), MercViewDetailsHelper.getProject().getProvider());
 	    view.createInfoDialog("Project Declined", "You have decline the won project!");
-	    // TODO return to main window
+	    // return to main window
+	    view.createTableViewer();
 	} catch (BusinessException e) {
 	    LOGGER.severe("Exception thrown in MercSelectionListener.declineBidWon:" + e.getMessage());
 	    view.createErrorDialog("Project Decline Error", "You could not decline the bid project!");
@@ -173,7 +176,8 @@ public class MercSelectionListener implements SelectionListener {
 
     private void withdrawBid() {
 	try {
-	    proxy.retractBidFromProject(MercViewBidHelper.getProject().getId(), MercViewBidHelper.getProject().getProvider());
+	    proxy.retractBidFromProject(MercViewDetailsHelper.getProject().getId(), MercViewDetailsHelper.getProject()
+		    .getProvider());
 	    view.createInfoDialog("Bid withdrawal", "You have withdrawn your bid from the project!");
 	    MercViewBidHelper.getBidButton().setText(ActionButtonOptionsEnum.PLACE_BID.getStringValue());
 	    MercViewBidHelper.getBidDescriptionText().setText(EMPTY);
@@ -217,9 +221,9 @@ public class MercSelectionListener implements SelectionListener {
 
 	if (succesful) {
 
-	    msg.setProjectId(MercViewBidHelper.getProject().getId());
-	    msg.setProvider(MercViewBidHelper.getProject().getProvider());
-	    msg.setUsername(MercViewBidHelper.getProject().getBuyerUserName());
+	    msg.setProjectId(MercViewDetailsHelper.getProject().getId());
+	    msg.setProvider(MercViewDetailsHelper.getProject().getProvider());
+	    msg.setUsername(MercViewDetailsHelper.getProject().getBuyerUserName());
 	    msg.setDirection(DirectionEnum.OUTGOING);
 	    msg.setDate(new Date());
 	    return msg;

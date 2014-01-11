@@ -192,8 +192,8 @@ public class MercView extends ViewPart {
 	searchOptionsCombo.setVisible(false);
 	((GridData) searchLabel.getLayoutData()).exclude = true;
 	searchLabel.setVisible(false);
-	MercViewBidHelper.createInformationBar(mainComposite, job, sListener);
-	MercViewBidHelper.createDetailsComposite(mainComposite, project, sListener);
+	MercViewDetailsHelper.createInformationBar(mainComposite, job, sListener);
+	MercViewDetailsHelper.createDetailsComposite(mainComposite, project, sListener);
 	// If the job status is null then the call was made from one of the search options('Favorites','Search by Keyword','Search
 	// by Type'). If it is not null then the call was made from the "my bids" search option ('Bidded projects' or 'Active
 	// projects').

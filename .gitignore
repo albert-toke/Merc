@@ -1,2 +1,5 @@
 .metadata/
+FAEP.Test/
+FAEP.Test.SWT/
+FAEP-ExternalJars/
 *.class

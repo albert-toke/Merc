@@ -44,9 +44,6 @@ public class FreelancerGateway extends AbstractApiGateway {
     private static final String BASE_URL = "http://api.sandbox.freelancer.com/";
 
     public FreelancerGateway() {
-
-	// System.setProperty("http.proxyPort", "3128");
-	// System.setProperty("http.proxyHost", "proxy.utcluj.ro");
     }
 
     @Override

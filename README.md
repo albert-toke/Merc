@@ -5,7 +5,7 @@ Description
 -----------
 Merc is a a bundle of Eclipse plug-ins, intended to help the freelancers day to day activities 
 *(NOTE:although the application consists of several plug-ins, in the remaining part of the document it will be refered
-to as **plug-in** or **application**)*. 
+to as "plug-in" or "application")*. 
 The goal of the application is to permit the user to browse freelancing offers, bid on projects and communicate with buyers across
 several freelancing websites.
 

@@ -19,7 +19,7 @@ System Requirements
 
 Installation
 ------------
-Download the jars from the release page and copy them in the `dropins` folder, in your Eclipse directory.
+Download the jars from the [release](https://github.com/albert-toke/Merc/releases/tag/v0.1-alpha) page and copy them in the `dropins` folder, in your Eclipse directory.
 
 Configuration
 -------------

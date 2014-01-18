@@ -2,6 +2,7 @@ package merc.plugin;
 
 import gateway.AbstractApiGateway;
 
+import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -38,11 +39,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
 	Activator.context = bundleContext;
 
-	SimpleFormatter loggerFormatter = new SimpleFormatter();
-	FileHandler handler = new FileHandler("dropins/nyest.log");
-	handler.setFormatter(loggerFormatter);
-
-	LOGGER.addHandler(handler);
+	initLogger();
 
 	// Getting all the provider gateways through the extension point.
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -106,6 +103,13 @@ public class Activator implements BundleActivator {
 	    LOGGER.severe("In Plugin Activator:" + e.getMessage());
 	}
 
+    }
+
+    private void initLogger() throws IOException {
+	SimpleFormatter loggerFormatter = new SimpleFormatter();
+	FileHandler handler = new FileHandler("dropins/merc.log");
+	handler.setFormatter(loggerFormatter);
+	LOGGER.addHandler(handler);
     }
 
     /*

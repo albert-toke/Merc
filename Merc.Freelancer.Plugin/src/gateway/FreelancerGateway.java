@@ -30,12 +30,13 @@ import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
-import enums.JobStatusEnum;
+import constants.and.enums.JobStatusEnum;
+import constants.and.enums.MercPluginConstants;
 import exceptions.BusinessException;
 
 public class FreelancerGateway extends AbstractApiGateway {
 
-    private static final Logger LOGGER = Logger.getLogger(FreelancerGateway.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
 
     private FreelancerApi.Sandbox freelancerApi;
     private FreelancerMapper mapper;
@@ -55,6 +56,18 @@ public class FreelancerGateway extends AbstractApiGateway {
 		.apiKey(apiKey).apiSecret(apiSecret).scope(SCOPE).build();
 	this.mapper = new FreelancerMapper();
     };
+
+    @Override
+    public void initGatewayWithDefaultValues() throws BusinessException {
+	String defaultKey = "7dc7ee059324b47ef9c248183279ea0d436c8ec0";
+	String defaultSecret = "9be5f0f5f81e9de087fd437c25e9007d0e57d6a7";
+	super.initGateway(defaultKey, defaultSecret);
+	LOGGER.setLevel(Level.INFO);
+	this.freelancerApi = new FreelancerApi.Sandbox();
+	service = new ServiceBuilder().provider(FreelancerApi.Sandbox.class).signatureType(SignatureType.QueryString)
+		.apiKey(defaultKey).apiSecret(defaultSecret).scope(SCOPE).build();
+	this.mapper = new FreelancerMapper();
+    }
 
     /**
      * {@inheritDoc}

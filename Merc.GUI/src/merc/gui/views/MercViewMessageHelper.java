@@ -21,8 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import common.wrappers.Message;
-
-import enums.DirectionEnum;
+import constants.and.enums.DirectionEnum;
 
 public class MercViewMessageHelper {
 

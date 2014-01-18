@@ -153,14 +153,14 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 		browserComposite.setVisible(false);
 		hintArea.setText(MODIFICATION_HINT);
 		String provider = providerCombo.getText();
-		String secret = preferences.get(provider + "-secret", "");
-		String key = preferences.get(provider + "-key", "");
+		String secret = preferences.get(provider + "-secret", "9be5f0f5f81e9de087fd437c25e9007d0e57d6a7");
+		String key = preferences.get(provider + "-key", "7dc7ee059324b47ef9c248183279ea0d436c8ec0");
 		secretText.setText(secret);
 		keyText.setText(key);
 		providersComposite.layout();
 	    }
 	});
-	providers = Proxy.getInstance().getWorkingProviderNames();
+	providers = Proxy.getInstance().getAllProviderNames();
 	providerCombo.setItems(providers.toArray(new String[providers.size()]));
 
 	Label secretLabel = new Label(providersComposite, SWT.NONE);
@@ -208,7 +208,7 @@ public class MercPreferencePage extends PreferencePage implements IWorkbenchPref
 	reqAuthorizationButton.addSelectionListener(new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		if (!providerCombo.getText().isEmpty()) {
+		if (!providerCombo.getText().isEmpty() && !secretText.getText().isEmpty() && !keyText.getText().isEmpty()) {
 		    browserComposite.setVisible(true);
 		    String provider = providerCombo.getText();
 		    String verificationUrl = Proxy.getInstance().getRequestTokenFromProvider(provider);

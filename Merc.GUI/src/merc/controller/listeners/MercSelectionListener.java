@@ -26,13 +26,14 @@ import common.wrappers.Job;
 import common.wrappers.Message;
 import common.wrappers.Project;
 
-import enums.DirectionEnum;
-import enums.JobStatusEnum;
+import constants.and.enums.DirectionEnum;
+import constants.and.enums.JobStatusEnum;
+import constants.and.enums.MercPluginConstants;
 import exceptions.BusinessException;
 
 public class MercSelectionListener implements SelectionListener {
 
-    private static final Logger LOGGER = Logger.getLogger(MercSelectionListener.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
 
     private MercView view;
     private SearchListenerHelper helper;

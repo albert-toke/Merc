@@ -37,8 +37,7 @@ import common.wrappers.Bid;
 import common.wrappers.Job;
 import common.wrappers.Message;
 import common.wrappers.Project;
-
-import enums.JobStatusEnum;
+import constants.and.enums.JobStatusEnum;
 
 public class MercView extends ViewPart {
 

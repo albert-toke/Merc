@@ -20,8 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import common.wrappers.Bid;
-
-import enums.JobStatusEnum;
+import constants.and.enums.JobStatusEnum;
 
 public class MercViewBidHelper {
 

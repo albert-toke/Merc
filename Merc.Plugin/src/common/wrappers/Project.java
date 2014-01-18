@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import enums.JobStatusEnum;
+import constants.and.enums.JobStatusEnum;
 
 /**
  * Contains the details of the project.

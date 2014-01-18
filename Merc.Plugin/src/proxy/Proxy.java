@@ -20,9 +20,11 @@ import common.wrappers.Project;
 import common.wrappers.ProjectPostMessage;
 import common.wrappers.ProjectPublicMessage;
 
+import constants.and.enums.MercPluginConstants;
+
 public class Proxy {
 
-    private static final Logger LOGGER = Logger.getLogger(Proxy.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
     private static Set<AbstractApiGateway> allGateways;
     private static Set<AbstractApiGateway> workingGateways;
     private static Proxy proxy;
@@ -82,7 +84,7 @@ public class Proxy {
     }
 
     public long getUserIdByProvider(String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	long id;
 	if (gateway.getUserId() != 0) {
 	    return gateway.getUserId();
@@ -94,13 +96,14 @@ public class Proxy {
     }
 
     public String getRequestTokenFromProvider(String provider) {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromAllGateways(provider);
 	return gateway.getVerificationURL();
     }
 
     public Map<String, String> getAccessTokenFromProvider(String provider, String verificationCode) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromAllGateways(provider);
 	Map<String, String> accessToken = gateway.getAccessTokenFromProvider(verificationCode);
+	workingGateways.add(gateway);
 	return accessToken;
     }
 
@@ -119,19 +122,19 @@ public class Proxy {
     }
 
     public List<Bid> getBidsForProject(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	List<Bid> bids = gateway.getBidsForProject(projectId);
 	return bids;
     }
 
     public List<ProjectPublicMessage> getPublicMessagesForProject(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	List<ProjectPublicMessage> messages = gateway.getPublicMessagesForProject(projectId);
 	return messages;
     }
 
     public void postPublicMessageOnProject(ProjectPostMessage message) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(message.getProvider());
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(message.getProvider());
 	gateway.postPublicMessagesOnProject(message);
     }
 
@@ -145,16 +148,15 @@ public class Proxy {
     }
 
     public Project getProjectDetails(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	Project project = gateway.getProjectDetails(projectId);
 	return project;
     }
 
-    // ujrairni, nem kell projectid
     public List<Message> getMessages(long projectId, long ownerId, String provider) throws BusinessException {
 
 	List<Message> messages = new ArrayList<Message>();
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	messages.addAll(gateway.getProjectMessages(projectId, ownerId));
 	return messages;
     }
@@ -168,27 +170,27 @@ public class Proxy {
     }
 
     public void sendMessage(Message msg) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(msg.getProvider());
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(msg.getProvider());
 	gateway.sendMessage(msg);
     }
 
     public void placeBid(BidRequest bid) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(bid.getProvider());
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(bid.getProvider());
 	gateway.placeBid(bid);
     }
 
     public void retractBidFromProject(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	gateway.retractBidFromProject(projectId);
     }
 
     public void acceptBidWon(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	gateway.acceptBidWon(projectId);
     }
 
     public void declineBidWon(long projectId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	gateway.declineBidWon(projectId);
     }
 
@@ -201,7 +203,7 @@ public class Proxy {
     }
 
     public void markMessageAsRead(long messageId, String provider) throws BusinessException {
-	AbstractApiGateway gateway = getGatewayByProvider(provider);
+	AbstractApiGateway gateway = getGatewayByProviderFromWorkingGateways(provider);
 	gateway.markMessageAsRead(messageId);
     }
 
@@ -221,9 +223,19 @@ public class Proxy {
 	return projects;
     }
 
-    public AbstractApiGateway getGatewayByProvider(String provider) {
+    public AbstractApiGateway getGatewayByProviderFromWorkingGateways(String provider) {
 	AbstractApiGateway gateway = null;
 	for (AbstractApiGateway gate : workingGateways) {
+	    if (gate.getProvider().equals(provider)) {
+		gateway = gate;
+	    }
+	}
+	return gateway;
+    }
+
+    public AbstractApiGateway getGatewayByProviderFromAllGateways(String provider) {
+	AbstractApiGateway gateway = null;
+	for (AbstractApiGateway gate : allGateways) {
 	    if (gate.getProvider().equals(provider)) {
 		gateway = gate;
 	    }

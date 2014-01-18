@@ -22,8 +22,9 @@ import common.wrappers.Notification;
 import common.wrappers.Project;
 import common.wrappers.ProjectPublicMessage;
 
-import enums.DirectionEnum;
-import enums.JobStatusEnum;
+import constants.and.enums.DirectionEnum;
+import constants.and.enums.JobStatusEnum;
+import constants.and.enums.MercPluginConstants;
 import exceptions.BusinessException;
 
 public class FreelancerMapper {
@@ -38,7 +39,7 @@ public class FreelancerMapper {
 
     public FreelancerMapper() {
 	jsonMapper = new ObjectMapper();
-	LOGGER = Logger.getLogger(FreelancerMapper.class.getName());
+	LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
     }
 
     // If the JSON mesage is an error message then throws an exception.

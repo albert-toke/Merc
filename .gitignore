@@ -2,4 +2,5 @@
 FAEP.Test/
 FAEP.Test.SWT/
 FAEP-ExternalJars/
+plugins/
 *.class

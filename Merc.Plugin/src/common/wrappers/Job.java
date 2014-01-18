@@ -2,7 +2,7 @@ package common.wrappers;
 
 import java.util.Date;
 
-import enums.JobStatusEnum;
+import constants.and.enums.JobStatusEnum;
 
 public class Job {
 

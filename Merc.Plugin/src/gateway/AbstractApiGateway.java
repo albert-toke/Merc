@@ -44,6 +44,8 @@ public abstract class AbstractApiGateway {
 
     public abstract boolean initializeGatewayLocally() throws JsonParseException, JsonMappingException, IOException;
 
+    public abstract void initGatewayWithDefaultValues() throws BusinessException;
+
     public abstract String getVerificationURL();
 
     public abstract Map<String, String> getAccessTokenFromProvider(String verificationCode) throws BusinessException;

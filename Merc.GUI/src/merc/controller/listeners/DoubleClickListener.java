@@ -23,11 +23,12 @@ import common.wrappers.Job;
 import common.wrappers.Message;
 import common.wrappers.Project;
 
+import constants.and.enums.MercPluginConstants;
 import exceptions.BusinessException;
 
 public class DoubleClickListener implements IDoubleClickListener {
 
-    private static final Logger LOGGER = Logger.getLogger(DoubleClickListener.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
 
     private MercView view;
     private Proxy proxy;

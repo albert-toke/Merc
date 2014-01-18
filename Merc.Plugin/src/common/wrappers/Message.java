@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import enums.DirectionEnum;
+import constants.and.enums.DirectionEnum;
 
 public class Message {
 

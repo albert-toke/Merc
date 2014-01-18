@@ -17,11 +17,12 @@ import business.services.HistoryBS;
 import common.wrappers.Job;
 import common.wrappers.JobSearch;
 
+import constants.and.enums.MercPluginConstants;
 import exceptions.BusinessException;
 
 public class SearchListenerHelper {
 
-    private static final Logger LOGGER = Logger.getLogger(SearchListenerHelper.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
 
     private static SearchListenerHelper helper;
     private List<Job> jobList;

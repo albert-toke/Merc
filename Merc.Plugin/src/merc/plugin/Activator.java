@@ -2,7 +2,9 @@ package merc.plugin;
 
 import gateway.AbstractApiGateway;
 
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -16,12 +18,13 @@ import org.osgi.service.prefs.Preferences;
 
 import proxy.Proxy;
 import business.services.HistoryBS;
+import constants.and.enums.MercPluginConstants;
 
 public class Activator implements BundleActivator {
 
     private static BundleContext context;
     private static final String EXTENSION_POINT_ID = "merc.plugin.gateway";
-    private static final Logger LOGGER = Logger.getLogger(Activator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MercPluginConstants.LOGGER_NAME);
 
     static BundleContext getContext() {
 	return context;
@@ -34,6 +37,12 @@ public class Activator implements BundleActivator {
      */
     public void start(BundleContext bundleContext) throws Exception {
 	Activator.context = bundleContext;
+
+	SimpleFormatter loggerFormatter = new SimpleFormatter();
+	FileHandler handler = new FileHandler("dropins/nyest.log");
+	handler.setFormatter(loggerFormatter);
+
+	LOGGER.addHandler(handler);
 
 	// Getting all the provider gateways through the extension point.
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -55,8 +64,13 @@ public class Activator implements BundleActivator {
 		String authSecret = preferences.get(gatewayInstance.getProvider() + "-tokenSecret", "");
 		String authToken = preferences.get(gatewayInstance.getProvider() + "-token", "");
 		LOGGER.info("Loaded gateway for provider:" + gatewayInstance.getProvider());
-		if (!authToken.isEmpty() && !authSecret.isEmpty() && !key.isEmpty() && !secret.isEmpty()) {
+		if (!authToken.isEmpty() && !authSecret.isEmpty()) {
 		    gatewayInstance.initGateway(key, secret);
+		} else {
+		    gatewayInstance.initGatewayWithDefaultValues();
+		}
+
+		if (!key.isEmpty() && !secret.isEmpty()) {
 		    gatewayInstance.setAccessToken(authToken, authSecret);
 
 		    proxy.addGatewayToWorkingGatewaysAndAllGateways(gatewayInstance);
@@ -66,10 +80,8 @@ public class Activator implements BundleActivator {
 		    LOGGER.info(gatewayInstance.getProvider() + "userid " + userId);
 		    goodToGo = true;
 
-		} else {
-		    // In case the specific gateway is not authorized.
-		    proxy.addGatewayToAllGateways(gatewayInstance);
 		}
+		proxy.addGatewayToAllGateways(gatewayInstance);
 
 	    } catch (CoreException e) {
 		LOGGER.severe(e.getMessage());

@@ -1,4 +1,4 @@
-package enums;
+package constants.and.enums;
 
 public enum DirectionEnum {
 	OUTGOING("To"),INCOMING("From");
